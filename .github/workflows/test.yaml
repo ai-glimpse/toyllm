@@ -17,9 +17,9 @@ jobs:
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         # see details (matrix, python-version, python-version-file, etc.)
         # https://github.com/actions/setup-python
       - name: Install poetry
@@ -37,11 +37,11 @@ jobs:
         run: poetry install
 
       - name: Run tests and generate coverage report
-        run: poetry run pytest --doctest-modules -v --cov=mppt --cov-fail-under 0 --cov-report=term --cov-report=xml --cov-report=html
+        run: poetry run pytest --doctest-modules -v --cov=toyllm --cov-fail-under 0 --cov-report=term --cov-report=xml --cov-report=html
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
-        if: success() && matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8'
+        if: success() && matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
