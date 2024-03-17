@@ -1,14 +1,14 @@
 [tool.poetry]
-name = "mppt"
-version = "0.3.0"
-description = "Python Package Template"
+name = "toyllm"
+version = "0.1.0"
+description = "Toy LLM"
 authors = ["Xiangzhuang Shen <datahonor@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.8.1"
-
+python = ">=3.11"
+torch = "^2.2.0"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.5.0"
@@ -26,6 +26,7 @@ flake8 = "^6.1.0"
 black = "^23.11.0"
 mypy = "^1.7.1"
 ruff = "^0.1.7"
+ipython = "^8.22.2"
 
 
 [virtualenvs]

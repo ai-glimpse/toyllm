@@ -1,27 +1,14 @@
-site_name: MPPT
+site_name: ToyLLM
 repo_url: https://github.com/shenxiangzhuang/mppt
-repo_name: shenxiangzhuang/mppt
+repo_name: toy-ai/toyllm
 edit_uri: ""
-site_description: A Modern Python Package Template
+site_description: Toy LLM
 site_author: Xiangzhuang Shen
-copyright: Copyright &copy; 2023 Xiangzhuang Shen
+copyright: Copyright &copy; 2024 Xiangzhuang Shen
 
 # Page tree
 nav:
   - Home: index.md
-  - Package Management:
-      - package/index.md
-      - Comparison of Python package managers: package/compare.md
-  - Documentation:
-      - doc/index.md
-  - Linters&Formatters:
-      - linter/index.md
-  - Testing:
-      - test/index.md
-  - Task Runner:
-      - task/index.md
-  - Miscellaneous:
-      - miscellaneous/index.md
   - Changelog: changelog.md
 
 theme:
