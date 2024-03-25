@@ -1,3 +1,9 @@
+"""
+Copyright 2024 Xiangzhuang Shen
+Copyright 2023-2024 Sebastian Raschka
+SPDX-License-Identifier: Apache-2.0
+"""
+
 from typing import TypeAlias
 
 import jaxtyping
