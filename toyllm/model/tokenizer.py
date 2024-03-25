@@ -1,8 +1,6 @@
-
-import torch
-import tiktoken
-
 import jaxtyping
+import tiktoken
+import torch
 from typeguard import typechecked as typechecker
 
 
@@ -15,9 +13,10 @@ GPT2Tokenizer = get_gpt2_tokenizer()
 
 
 @jaxtyping.jaxtyped(typechecker=typechecker)
-def text_to_token_ids(text: str,
-                      tokenizer: tiktoken.Encoding = GPT2Tokenizer,
-                      ) -> jaxtyping.Int[torch.Tensor, "1 num_tokens"]:
+def text_to_token_ids(
+    text: str,
+    tokenizer: tiktoken.Encoding = GPT2Tokenizer,
+) -> jaxtyping.Int[torch.Tensor, "1 num_tokens"]:
     """
     >>> text_to_token_ids("Hello World", get_gpt2_tokenizer())
     tensor([[15496,  2159]])
@@ -28,9 +27,10 @@ def text_to_token_ids(text: str,
 
 
 @jaxtyping.jaxtyped(typechecker=typechecker)
-def token_ids_to_text(text_id_tensor: jaxtyping.Int[torch.Tensor, "1 num_tokens"],
-                      tokenizer: tiktoken.Encoding = GPT2Tokenizer,
-                      ) -> str:
+def token_ids_to_text(
+    text_id_tensor: jaxtyping.Int[torch.Tensor, "1 num_tokens"],
+    tokenizer: tiktoken.Encoding = GPT2Tokenizer,
+) -> str:
     """
     >>> token_ids_to_text(torch.tensor([[15496,  2159]]), get_gpt2_tokenizer())
     'Hello World'
@@ -42,4 +42,5 @@ def token_ids_to_text(text_id_tensor: jaxtyping.Int[torch.Tensor, "1 num_tokens"
 
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod(verbose=True)

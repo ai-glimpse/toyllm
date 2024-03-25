@@ -211,7 +211,11 @@ def generate_text_simple(model: GPTModel, idx, max_new_tokens, context_size):
 
 if __name__ == "__main__":
     from toyllm.model.config import GPT_CONFIG_124M
-    from toyllm.model.tokenizer import get_gpt2_tokenizer, text_to_token_ids, token_ids_to_text
+    from toyllm.model.tokenizer import (
+        get_gpt2_tokenizer,
+        text_to_token_ids,
+        token_ids_to_text,
+    )
 
     seed = 42
     device = get_device()
