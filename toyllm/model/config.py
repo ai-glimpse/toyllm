@@ -14,6 +14,7 @@ class GPTModelConfig:
     :param drop_rate: dropout rate
     :param qkv_bias: query key value bias terms
     """
+
     vocab_size: int
     ctx_len: int
     emb_dim: int

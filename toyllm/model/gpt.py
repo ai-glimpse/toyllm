@@ -1,29 +1,29 @@
 import torch
 import torch.nn as nn
+from jaxtyping import Float, jaxtyped
+from typeguard import typechecked as typechecker
 
 from toyllm.device import get_device
 from toyllm.model.config import GPTModelConfig
 
-from jaxtyping import Float, jaxtyped
-from typeguard import typechecked as typechecker
-
 
 class MultiHeadAttention(nn.Module):
-    def __init__(self,
-                 d_in: int,
-                 d_out: int,
-                 ctx_len: int,
-                 dropout_rate: float,
-                 n_heads: int,
-                 qkv_bias: bool = False,
-                 ):
+    def __init__(
+        self,
+        d_in: int,
+        d_out: int,
+        ctx_len: int,
+        dropout_rate: float,
+        n_heads: int,
+        qkv_bias: bool = False,
+    ):
         super().__init__()
         assert d_out % n_heads == 0, "d_out must be divisible by num_heads"
 
         self.d_out = d_out
         self.n_heads = n_heads
         self.head_dim = (
-                d_out // n_heads
+            d_out // n_heads
         )  # Reduce the projection dim to match desired output dim
 
         self.Wq = nn.Linear(d_in, d_out, bias=qkv_bias)  # Query Weight
@@ -36,9 +36,9 @@ class MultiHeadAttention(nn.Module):
         )
 
     @jaxtyped(typechecker=typechecker)
-    def forward(self,
-                x: Float[torch.Tensor, "bath_size num_tokens d_in"]
-                ) -> Float[torch.Tensor, "bath_size num_tokens d_out"]:
+    def forward(
+        self, x: Float[torch.Tensor, "bath_size num_tokens d_in"]
+    ) -> Float[torch.Tensor, "bath_size num_tokens d_out"]:
         batch_size, num_tokens, _d_in = x.shape
 
         # (batch_size, num_tokens, d_in) -> (batch_size, num_tokens, d_out)
@@ -214,6 +214,7 @@ def generate_text_simple(model, idx, max_new_tokens, context_size):
 
 if __name__ == "__main__":
     import tiktoken
+
     from toyllm.model.config import gpt_config_124m
 
     seed = 42
