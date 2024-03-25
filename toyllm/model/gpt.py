@@ -210,36 +210,33 @@ def generate_text_simple(model: GPTModel, idx, max_new_tokens, context_size):
 
 
 if __name__ == "__main__":
-    import tiktoken
-
-    from toyllm.model.config import gpt_config_124m
+    from toyllm.model.config import GPT_CONFIG_124M
+    from toyllm.model.tokenizer import get_gpt2_tokenizer, text_to_token_ids, token_ids_to_text
 
     seed = 42
     device = get_device()
 
     torch.manual_seed(seed)
-    model = GPTModel(gpt_config_124m)
+    model = GPTModel(GPT_CONFIG_124M)
     model.to(device)
 
     model.eval()  # disable dropout
     start_context = "Hello, I am"
 
-    tokenizer = tiktoken.get_encoding("gpt2")
-    encoded = tokenizer.encode(start_context)
-    encoded_tensor = torch.tensor(encoded).unsqueeze(0).to(device)
+    tokenizer = get_gpt2_tokenizer()
+    encoded_tensor = text_to_token_ids(start_context).to(device)
 
     print(f"\n{50*'='}\n{22*' '}IN\n{50*'='}")
     print("\nInput text:", start_context)
-    print("Encoded input text:", encoded)
     print("encoded_tensor.shape:", encoded_tensor.shape)
 
     out = generate_text_simple(
         model=model,
         idx=encoded_tensor,
         max_new_tokens=10,
-        context_size=gpt_config_124m.ctx_len,
+        context_size=GPT_CONFIG_124M.ctx_len,
     )
-    decoded_text = tokenizer.decode(out.squeeze(0).tolist())
+    decoded_text = token_ids_to_text(out)
 
     print(f"\n\n{50*'='}\n{22*' '}OUT\n{50*'='}")
     print("\nOutput:", out)

@@ -24,7 +24,7 @@ class GPTModelConfig:
     qkv_bias: bool
 
 
-gpt_config_124m = GPTModelConfig(
+GPT_CONFIG_124M = GPTModelConfig(
     vocab_size=50257,
     ctx_len=1024,
     emb_dim=768,
