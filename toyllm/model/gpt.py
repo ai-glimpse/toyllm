@@ -211,7 +211,7 @@ def generate_text_simple(model: GPTModel, text_token_ids: torch.Tensor, max_new_
 
 if __name__ == "__main__":
     from toyllm.model.config import GPT_CONFIG_124M
-    from toyllm.model.tokenizer import (
+    from toyllm.tokenizer import (
         get_gpt2_tokenizer,
         text_to_token_ids,
         token_ids_to_text,
