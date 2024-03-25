@@ -1,10 +1,16 @@
+from typing import TypeAlias
+
+import jaxtyping
 import torch
 import torch.nn as nn
-from jaxtyping import Float, jaxtyped
 from typeguard import typechecked as typechecker
 
 from toyllm.device import get_device
 from toyllm.model.config import GPTModelConfig
+
+GPTInputType: TypeAlias = jaxtyping.Int[torch.Tensor, "batch_size num_tokens"]
+GPTInnerType: TypeAlias = jaxtyping.Float[torch.Tensor, "batch_size num_tokens emb_dim"]
+GPTOutputType: TypeAlias = jaxtyping.Float[torch.Tensor, "batch_size num_tokens vocab_size"]
 
 
 class MultiHeadAttention(nn.Module):
@@ -22,23 +28,17 @@ class MultiHeadAttention(nn.Module):
 
         self.d_out = d_out
         self.n_heads = n_heads
-        self.head_dim = (
-            d_out // n_heads
-        )  # Reduce the projection dim to match desired output dim
+        self.head_dim = d_out // n_heads  # Reduce the projection dim to match desired output dim
 
         self.Wq = nn.Linear(d_in, d_out, bias=qkv_bias)  # Query Weight
         self.Wk = nn.Linear(d_in, d_out, bias=qkv_bias)  # Key Weight
         self.Wv = nn.Linear(d_in, d_out, bias=qkv_bias)  # Value Weight
         self.out_proj = nn.Linear(d_out, d_out)  # Linear layer to combine head outputs
         self.dropout = nn.Dropout(dropout_rate)
-        self.register_buffer(
-            "mask", torch.triu(torch.ones(ctx_len, ctx_len), diagonal=1)
-        )
+        self.register_buffer("mask", torch.triu(torch.ones(ctx_len, ctx_len), diagonal=1))
 
-    @jaxtyped(typechecker=typechecker)
-    def forward(
-        self, x: Float[torch.Tensor, "bath_size num_tokens d_in"]
-    ) -> Float[torch.Tensor, "bath_size num_tokens d_out"]:
+    @jaxtyping.jaxtyped(typechecker=typechecker)
+    def forward(self, x: GPTInnerType) -> GPTInnerType:
         batch_size, num_tokens, _d_in = x.shape
 
         # (batch_size, num_tokens, d_in) -> (batch_size, num_tokens, d_out)
@@ -68,7 +68,7 @@ class MultiHeadAttention(nn.Module):
         attn_scores.masked_fill_(mask_bool, -torch.inf)
 
         attn_weights = torch.softmax(attn_scores / keys.shape[-1] ** 0.5, dim=-1)
-        # TODO: why dropout here?
+        # TODO: explain why dropout here
         attn_weights = self.dropout(attn_weights)
 
         # Shape: (b, num_tokens, num_heads, head_dim)
@@ -88,7 +88,8 @@ class LayerNorm(nn.Module):
         self.scale = nn.Parameter(torch.ones(emb_dim))
         self.shift = nn.Parameter(torch.zeros(emb_dim))
 
-    def forward(self, x):
+    @jaxtyping.jaxtyped(typechecker=typechecker)
+    def forward(self, x: GPTInnerType) -> GPTInnerType:
         mean = x.mean(dim=-1, keepdim=True)
         var = x.var(dim=-1, keepdim=True, unbiased=False)
         norm_x = (x - mean) / torch.sqrt(var + self.eps)
@@ -99,18 +100,9 @@ class GELU(nn.Module):
     def __init__(self):
         super().__init__()
 
-    def forward(self, x):
-        return (
-            0.5
-            * x
-            * (
-                1
-                + torch.tanh(
-                    torch.sqrt(torch.tensor(2.0 / torch.pi))
-                    * (x + 0.044715 * torch.pow(x, 3))
-                )
-            )
-        )
+    @jaxtyping.jaxtyped(typechecker=typechecker)
+    def forward(self, x: GPTInnerType) -> GPTInnerType:
+        return 0.5 * x * (1 + torch.tanh(torch.sqrt(torch.tensor(2.0 / torch.pi)) * (x + 0.044715 * torch.pow(x, 3))))
 
 
 class FeedForward(nn.Module):
@@ -123,7 +115,8 @@ class FeedForward(nn.Module):
             nn.Dropout(cfg.drop_rate),
         )
 
-    def forward(self, x):
+    @jaxtyping.jaxtyped(typechecker=typechecker)
+    def forward(self, x: GPTInnerType) -> GPTInnerType:
         return self.layers(x)
 
 
@@ -143,7 +136,8 @@ class TransformerBlock(nn.Module):
         self.norm2 = LayerNorm(cfg.emb_dim)
         self.drop_resid = nn.Dropout(cfg.drop_rate)
 
-    def forward(self, x):
+    @jaxtyping.jaxtyped(typechecker=typechecker)
+    def forward(self, x: GPTInnerType) -> GPTInnerType:
         # Shortcut connection for attention block
         shortcut = x
         x = self.norm1(x)
@@ -168,17 +162,20 @@ class GPTModel(nn.Module):
         self.pos_emb = nn.Embedding(cfg.ctx_len, cfg.emb_dim)
         self.drop_emb = nn.Dropout(cfg.drop_rate)
 
-        self.trf_blocks = nn.Sequential(
-            *[TransformerBlock(cfg) for _ in range(cfg.n_layers)]
-        )
+        self.trf_blocks = nn.Sequential(*[TransformerBlock(cfg) for _ in range(cfg.n_layers)])
 
         self.final_norm = LayerNorm(cfg.emb_dim)
         self.out_head = nn.Linear(cfg.emb_dim, cfg.vocab_size, bias=False)
 
-    def forward(self, in_idx):
-        _batch_size, seq_len = in_idx.shape
-        tok_embeds = self.tok_emb(in_idx)
-        pos_embeds = self.pos_emb(torch.arange(seq_len, device=in_idx.device))
+    @jaxtyping.jaxtyped(typechecker=typechecker)
+    def forward(self, input_vocab_indexes: GPTInputType) -> GPTOutputType:
+        _batch_size, num_tokens = input_vocab_indexes.shape
+        # batch_size num_tokens -> batch_size num_tokens emb_dim
+        tok_embeds = self.tok_emb(input_vocab_indexes)
+        # pos_embeds shape: (num_tokens, emb_dim)
+        pos_embeds = self.pos_emb(torch.arange(num_tokens, device=input_vocab_indexes.device))
+        # pos_embeds is **broadcast** to (batch_size, num_tokens, emb_dim)
+        # x: (batch_size, num_tokens, emb_dim)
         x = tok_embeds + pos_embeds  # Shape [batch_size, num_tokens, emb_size]
         x = self.drop_emb(x)
         x = self.trf_blocks(x)
@@ -187,7 +184,7 @@ class GPTModel(nn.Module):
         return logits
 
 
-def generate_text_simple(model, idx, max_new_tokens, context_size):
+def generate_text_simple(model: GPTModel, idx, max_new_tokens, context_size):
     # idx is (B, T) array of indices in the current context
     for _ in range(max_new_tokens):
         # Crop current context if it exceeds the supported context size
