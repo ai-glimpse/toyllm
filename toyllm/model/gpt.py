@@ -11,7 +11,6 @@ import torch
 import torch.nn as nn
 from typeguard import typechecked as typechecker
 
-from toyllm.device import get_device
 from toyllm.model.config import GPTModelConfig
 
 GPTInputType: TypeAlias = jaxtyping.Int[torch.Tensor, "batch_size num_tokens"]
@@ -189,66 +188,6 @@ class GPTModel(nn.Module):
         logits = self.out_head(x)
         return logits
 
-
-def generate_text_simple(model: GPTModel, text_token_ids: torch.Tensor, max_new_tokens: int, ctx_len: int):
-    # idx is (B, T) array of indices in the current context
-    for _ in range(max_new_tokens):
-        # Crop current context if it exceeds the supported context size(ctx_len)
-        # E.g., if LLM supports only 5 tokens, and the context size is 10
-        # then only the last 5 tokens are used as context
-        context_text_token_ids = text_token_ids[:, -ctx_len:]
-
-        # Get the predictions
-        with torch.no_grad():
-            logits = model(context_text_token_ids)
-
-        # Focus only on the last time step
-        # (batch, n_token, vocab_size) becomes (batch, vocab_size)
-        logits = logits[:, -1, :]
-
-        # Get the idx of the vocab entry with the highest logits value
-        next_token_id = torch.argmax(logits, dim=-1, keepdim=True)  # (batch, 1)
-
-        # Append sampled index to the running sequence
-        text_token_ids = torch.cat((text_token_ids, next_token_id), dim=1)  # (batch, n_tokens+1)
-
-    return text_token_ids
-
-
-if __name__ == "__main__":
-    from toyllm.model.config import GPT_CONFIG_124M
-    from toyllm.tokenizer import (
-        get_gpt2_tokenizer,
-        text_to_token_ids,
-        token_ids_to_text,
-    )
-
-    seed = 42
-    device = get_device()
-
-    torch.manual_seed(seed)
-    model = GPTModel(GPT_CONFIG_124M)
-    model.to(device)
-
-    model.eval()  # disable dropout
-    start_context = "Hello, I am"
-
-    tokenizer = get_gpt2_tokenizer()
-    text_token_ids = text_to_token_ids(start_context).to(device)
-
-    print(f"\n{50*'='}\n{22*' '}IN\n{50*'='}")
-    print("\nInput text:", start_context)
-    print("encoded_tensor.shape:", text_token_ids.shape)
-
-    out = generate_text_simple(
-        model=model,
-        text_token_ids=text_token_ids,
-        max_new_tokens=10,
-        ctx_len=GPT_CONFIG_124M.ctx_len,
-    )
-    decoded_text = token_ids_to_text(out)
-
-    print(f"\n\n{50*'='}\n{22*' '}OUT\n{50*'='}")
-    print("\nOutput:", out)
-    print("Output length:", len(out[0]))
-    print("Output text:", decoded_text)
+    @property
+    def device(self) -> torch.device:
+        return next(self.parameters()).device

@@ -9,13 +9,13 @@ def get_gpt2_tokenizer() -> tiktoken.Encoding:
     return tokenizer
 
 
-GPT2Tokenizer = get_gpt2_tokenizer()
+gpt2_tokenizer = get_gpt2_tokenizer()
 
 
 @jaxtyping.jaxtyped(typechecker=typechecker)
 def text_to_token_ids(
     text: str,
-    tokenizer: tiktoken.Encoding = GPT2Tokenizer,
+    tokenizer: tiktoken.Encoding = gpt2_tokenizer,
 ) -> jaxtyping.Int[torch.Tensor, "1 num_tokens"]:
     """
     >>> text_to_token_ids("Hello World", get_gpt2_tokenizer())
@@ -29,7 +29,7 @@ def text_to_token_ids(
 @jaxtyping.jaxtyped(typechecker=typechecker)
 def token_ids_to_text(
     text_id_tensor: jaxtyping.Int[torch.Tensor, "1 num_tokens"],
-    tokenizer: tiktoken.Encoding = GPT2Tokenizer,
+    tokenizer: tiktoken.Encoding = gpt2_tokenizer,
 ) -> str:
     """
     >>> token_ids_to_text(torch.tensor([[15496,  2159]]), get_gpt2_tokenizer())
