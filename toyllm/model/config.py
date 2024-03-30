@@ -24,7 +24,7 @@ class GPTModelConfig:
     qkv_bias: bool
 
 
-GPT_CONFIG_124M = GPTModelConfig(
+gpt_config_124_m = GPTModelConfig(
     vocab_size=50257,
     ctx_len=1024,
     emb_dim=768,
@@ -33,3 +33,15 @@ GPT_CONFIG_124M = GPTModelConfig(
     drop_rate=0.1,
     qkv_bias=False,
 )
+
+
+@dataclass
+class GPTTrainingConfig:
+    """
+    GPT training config: hyperparameters for GPT model training
+    """
+
+    learning_rate: float = 5e-4
+    num_epochs: int = 10
+    batch_size: int = 2
+    weight_decay: float = 0.1

@@ -1,8 +1,7 @@
-"""
-Copyright 2024 Xiangzhuang Shen
-Copyright 2023-2024 Sebastian Raschka
-SPDX-License-Identifier: Apache-2.0
-"""
+# Copyright 2024 Xiangzhuang Shen
+# Copyright 2023-2024 Sebastian Raschka
+# SPDX-License-Identifier: Apache-2.0
+
 
 from typing import TypeAlias
 
@@ -163,6 +162,7 @@ class TransformerBlock(nn.Module):
 class GPTModel(nn.Module):
     def __init__(self, cfg: GPTModelConfig):
         super().__init__()
+        self.config = cfg
         self.tok_emb = nn.Embedding(cfg.vocab_size, cfg.emb_dim)
         self.pos_emb = nn.Embedding(cfg.ctx_len, cfg.emb_dim)
         self.drop_emb = nn.Dropout(cfg.drop_rate)

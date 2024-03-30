@@ -1,9 +1,19 @@
+import logging
+import pathlib
+import urllib.request
+
 import tiktoken
 import torch
 from torch.utils.data import DataLoader, Dataset
 
+logger = logging.getLogger(__name__)
 
-class GPTDatasetV1(Dataset):
+
+def get_dataset_dir() -> pathlib.Path:
+    return pathlib.Path(__file__).parents[1] / "dataset"
+
+
+class GPTDataset(Dataset):
     def __init__(self, txt: str, tokenizer: tiktoken.Encoding, max_length: int, stride: int):
         """
         :param txt: txt data
@@ -32,14 +42,50 @@ class GPTDatasetV1(Dataset):
         return self.input_ids[idx], self.target_ids[idx]
 
 
-def create_dataloader_v1(txt, batch_size=4, max_length=256, stride=128, shuffle=True, drop_last=True):
-    # Initialize the tokenizer
-    tokenizer = tiktoken.get_encoding("gpt2")
+class GPTDataloader:
+    def __init__(
+        self,
+        tokenizer: tiktoken.Encoding,
+        max_length: int,
+        stride: int,
+        batch_size: int,
+    ):
+        self.tokenizer = tokenizer
+        self.max_length = max_length
+        self.stride = stride
+        self.batch_size = batch_size
 
-    # Create dataset
-    dataset = GPTDatasetV1(txt, tokenizer, max_length, stride)
+    def create_dataloader(self, text: str, shuffle=True, drop_last=True) -> DataLoader:
+        # Create dataset
+        dataset = GPTDataset(text, self.tokenizer, self.max_length, self.stride)
 
-    # Create dataloader
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, drop_last=drop_last)
+        # Create dataloader
+        dataloader = DataLoader(dataset, batch_size=self.batch_size, shuffle=shuffle, drop_last=drop_last)
 
-    return dataloader
+        return dataloader
+
+
+def read_simple_text_file() -> str:
+    file_name = "the-verdict.txt"
+    url = "https://raw.githubusercontent.com/rasbt/LLMs-from-scratch/main/ch02/01_main-chapter-code/the-verdict.txt"
+
+    file_path = get_dataset_dir() / file_name
+
+    # if not exists, download it first
+    if not file_path.exists():
+        logger.info(f"Downloading {url} to {file_path}")
+        with urllib.request.urlopen(url) as response:
+            text_data = response.read().decode("utf-8")
+        with open(file_path, "w", encoding="utf-8") as file:
+            file.write(text_data)
+
+        logger.info(f"Saved {file_path}")
+    # open the file
+    with open(file_path, "r", encoding="utf-8") as file:
+        text_data = file.read()
+    return text_data
+
+
+if __name__ == "__main__":
+    text = read_simple_text_file()
+    print(len(text))
