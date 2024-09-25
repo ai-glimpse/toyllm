@@ -1,42 +1,78 @@
-[tool.poetry]
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
 name = "toyllm"
 version = "0.1.0"
 description = "Toy LLM"
-authors = ["Xiangzhuang Shen <datahonor@gmail.com>"]
-license = "Apache-2.0"
+keywords=["machine learning", "deep learning", "llm"]
+license = {text = "Apache 2.0"}
 readme = "README.md"
+authors = [
+    {name = "Xiangzhuang Shen", email = "datahonor@gmail.com"},
+]
 
-[tool.poetry.dependencies]
-python = ">=3.11,<4.0"
-torch = "^2.2.0"
-tiktoken = "^0.6.0"
-numpy = "^1.26.4"
-jaxtyping = "^0.2.28"
-matplotlib = "^3.8.3"
+classifiers=[
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+requires-python = ">= 3.11,<3.13"
+dependencies = [
+    "numpy",
+    "torch",
+    "tiktoken",
+    "jaxtyping"
+]
 
-[tool.poetry.group.dev.dependencies]
-pre-commit = "^3.5.0"
-mkdocs = "^1.5.3"
-mkdocs-bibtex = "^2.11.0"
-mkdocstrings = "^0.24.0"
-mkdocs-material-extensions = "^1.3.1"
-mkdocs-material = "^9.4.14"
-pytest = "^7.4.3"
-pytest-cov = "^4.1.0"
-hypothesis = "^6.91.0"
-pytest-sugar = "^0.9.7"
-isort = "^5.12.0"
-flake8 = "^6.1.0"
-black = "^23.11.0"
-mypy = "^1.7.1"
-ruff = "^0.1.7"
-ipython = "^8.22.2"
-nvitop = "^1.3.2"
+[project.optional-dependencies]
+dev = [
+    "nvitop",
+    "pre-commit",
+    "ipython",
+    "black",
+    "flake8",
+    "mypy",
+    "isort",
+    "ruff",
+    "pytest",
+    "pytest-cov",
+    "pytest-sugar",
+    "hypothesis>=6.112.0",
+    "commitizen",
+]
+plot = [
+    "matplotlib",
+]
+docs = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocs-material-extensions",
+    "mkdocstrings",
+    "mkdocs-bibtex",
+    "mkdocstrings-python",
+]
+
+[tool.setuptools]
+zip-safe = true
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["toyllm*"]
+namespaces = false
 
 
-[virtualenvs]
-create = true
-in-project = true
+[tool.uv]
+extra-index-url = ["https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"]
 
 [tool.isort]
 profile = "black"
@@ -50,8 +86,3 @@ ignore = ["F722"]
 
 [tool.black]
 line-length = 120
-
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
