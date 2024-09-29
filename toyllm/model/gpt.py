@@ -191,3 +191,13 @@ class GPTModel(nn.Module):
     @property
     def device(self) -> torch.device:
         return next(self.parameters()).device
+    
+    def save(self):
+        torch.save(self.state_dict(), f"{self.config.name}.pt")
+    
+    def load(self, model_path: str):
+        self.load_state_dict(torch.load(model_path, weights_only=True))
+                
+    # TODO
+    def load_openai_weight(self) -> "GPTModel":
+        return self

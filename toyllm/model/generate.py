@@ -37,9 +37,9 @@ class TextGenerator:
         if self.model_instance is not None:
             model = self.model_instance
             self.model_config = model.config
+            print("Use model instance")
         elif self.model_config is not None:
             model = GPTModel(self.model_config)
-            # TODO: load mode weight
             if self.model_file_path is not None:
                 model.load_state_dict(torch.load(self.model_file_path))
             else:
@@ -149,8 +149,25 @@ class TextGenerator:
 
 
 if __name__ == "__main__":
-    text_generator = TextGenerator(model_config=gpt_config_124_m)
+    import pathlib
+    from toyllm.device import current_device
+    from toyllm.model.config import gpt_config_355_m, gpt_config_124_m
+    from toyllm.model.weight import tf, load_gpt2_params_from_tf_ckpt, load_weights_into_gpt
+    
+    gpt_config = gpt_config_355_m
+    
+    model_dir = "/home/netease/personal/toyllm/models/355M"
+    tf_ckpt_path = tf.train.latest_checkpoint(model_dir)
+    params = load_gpt2_params_from_tf_ckpt(tf_ckpt_path, n_layer=gpt_config.n_layers)
+    gpt = GPTModel(gpt_config)
+    gpt = gpt.to(current_device)
+    load_weights_into_gpt(gpt, params)
+    gpt.save()
+    
+    
+    text_generator = TextGenerator(model_instance=gpt)
 
-    prompt_text = "Hello, I am"
-    generate_text = text_generator.generate(prompt_text=prompt_text, top_k=10, temperature=0.9)
+    prompt_text = "Alan Turing theorized that computers would one day become"
+    generate_text = text_generator.generate(prompt_text=prompt_text, max_gen_tokens=40, top_k=50, temperature=0.1)
     print(generate_text)
+    print(text_generator.gpt_model.device)
