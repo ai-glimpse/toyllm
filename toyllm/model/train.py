@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader
 
 from toyllm.dataset import GPTDataloader
 from toyllm.device import current_device
-from toyllm.model.config import GPTModelConfig, GPTTrainingConfig, GPTModelSize
+from toyllm.model.config import GPTModelSize, GPTTrainingConfig
 from toyllm.model.generate import TextGenerator
 from toyllm.model.gpt import GPTModel
 from toyllm.tokenizer import get_gpt2_tokenizer
