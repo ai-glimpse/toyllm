@@ -32,8 +32,6 @@ dependencies = [
     "torch",
     "tiktoken",
     "jaxtyping",
-    "tensorflow>=2.15.0",
-    "tqdm>=4.66.5",
 ]
 
 [project.optional-dependencies]
