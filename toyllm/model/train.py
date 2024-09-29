@@ -138,8 +138,8 @@ def main(
 
     gpt_data_loader = GPTDataloader(
         tokenizer=tokenizer,
-        max_length=gpt_size.ctx_len,
-        stride=gpt_size.ctx_len,
+        max_length=model.config.ctx_len,
+        stride=model.config.ctx_len,
         batch_size=training_config.batch_size,
     )
     train_loader, val_loader = get_data_loaders(text, gpt_data_loader=gpt_data_loader, train_ratio=0.9)
