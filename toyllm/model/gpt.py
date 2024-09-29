@@ -197,7 +197,3 @@ class GPTModel(nn.Module):
     
     def load(self, model_path: str):
         self.load_state_dict(torch.load(model_path, weights_only=True))
-                
-    # TODO
-    def load_openai_weight(self) -> "GPTModel":
-        return self

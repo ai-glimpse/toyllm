@@ -18,15 +18,11 @@ logger = logging.getLogger(__name__)
 class TextGenerator:
     def __init__(
         self,
-        model_config: Optional[GPTModelConfig] = None,
-        model_instance: Optional[GPTModel] = None,
-        model_file_path: Optional[pathlib.Path] = None,
+        model_instance: GPTModel,
         tokenizer: tiktoken.Encoding = gpt2_tokenizer,
         seed: int = 42,
     ):
-        self.model_config = model_config
         self.model_instance = model_instance
-        self.model_file_path = model_file_path
         self.tokenizer = tokenizer
         self.seed = seed
 
@@ -37,7 +33,6 @@ class TextGenerator:
         if self.model_instance is not None:
             model = self.model_instance
             self.model_config = model.config
-            print("Use model instance")
         elif self.model_config is not None:
             model = GPTModel(self.model_config)
             if self.model_file_path is not None:
@@ -149,20 +144,9 @@ class TextGenerator:
 
 
 if __name__ == "__main__":
-    import pathlib
-    from toyllm.device import current_device
-    from toyllm.model.config import gpt_config_355_m, gpt_config_124_m, gpt_config_774_m
-    from toyllm.model.weight import tf, load_gpt2_params_from_tf_ckpt, load_weights_into_gpt
+    from toyllm.model.config import gpt_config_124_m
     
-    gpt_config = gpt_config_774_m
-    
-    model_dir = "/home/netease/personal/toyllm/models/774M"
-    tf_ckpt_path = tf.train.latest_checkpoint(model_dir)
-    params = load_gpt2_params_from_tf_ckpt(tf_ckpt_path, n_layer=gpt_config.n_layers)
-    gpt = GPTModel(gpt_config)
-    gpt = gpt.to(current_device)
-    load_weights_into_gpt(gpt, params)
-    gpt.save()
+    gpt = GPTModel(gpt_config_124_m)
     
     
     text_generator = TextGenerator(model_instance=gpt)
