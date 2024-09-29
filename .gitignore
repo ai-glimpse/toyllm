@@ -1,3 +1,7 @@
+# torch
+*.pt
+models/*
+
 # ide cache
 .vscode
 .idea

@@ -31,7 +31,7 @@ dependencies = [
     "numpy",
     "torch",
     "tiktoken",
-    "jaxtyping"
+    "jaxtyping",
 ]
 
 [project.optional-dependencies]

@@ -1,5 +1,4 @@
 import logging
-import pathlib
 from typing import Optional
 
 import jaxtyping
@@ -8,7 +7,6 @@ import torch
 from typeguard import typechecked as typechecker
 
 from toyllm.device import current_device
-from toyllm.model.config import GPTModelConfig, gpt_config_124_m
 from toyllm.model.gpt import GPTModel
 from toyllm.tokenizer import gpt2_tokenizer, text_to_token_ids, token_ids_to_text
 
@@ -18,44 +16,25 @@ logger = logging.getLogger(__name__)
 class TextGenerator:
     def __init__(
         self,
-        model_config: Optional[GPTModelConfig] = None,
-        model_instance: Optional[GPTModel] = None,
-        model_file_path: Optional[pathlib.Path] = None,
+        gpt_model: GPTModel,
         tokenizer: tiktoken.Encoding = gpt2_tokenizer,
         seed: int = 42,
     ):
-        self.model_config = model_config
-        self.model_instance = model_instance
-        self.model_file_path = model_file_path
         self.tokenizer = tokenizer
         self.seed = seed
+        self.gpt_model = self.__load_gpt_model(gpt_model)
 
-        self.gpt_model = self.__get_gpt_model()
-
-    def __get_gpt_model(self) -> GPTModel:
+    def __load_gpt_model(self, gpt_model: GPTModel) -> GPTModel:
         torch.manual_seed(self.seed)
-        if self.model_instance is not None:
-            model = self.model_instance
-            self.model_config = model.config
-        elif self.model_config is not None:
-            model = GPTModel(self.model_config)
-            # TODO: load mode weight
-            if self.model_file_path is not None:
-                model.load_state_dict(torch.load(self.model_file_path))
-            else:
-                logger.warning("Debug mode: with random model weight")
-        else:
-            raise ValueError("Can not initialize GPT Model without model_instance or model_config")
         # disable dropout and so on
-        model.eval()
-        if model.device != current_device:
-            model.to(current_device)
-        return model
+        gpt_model.eval()
+        if gpt_model.device != current_device:
+            gpt_model.to(current_device)
+        return gpt_model
 
     @property
     def context_length(self) -> int:
-        assert self.model_config is not None, "Model config is None"
-        return self.model_config.ctx_len
+        return self.gpt_model.config.ctx_len
 
     def generate(
         self,
@@ -149,8 +128,17 @@ class TextGenerator:
 
 
 if __name__ == "__main__":
-    text_generator = TextGenerator(model_config=gpt_config_124_m)
+    from toyllm.model.config import GPTModelSize
 
-    prompt_text = "Hello, I am"
-    generate_text = text_generator.generate(prompt_text=prompt_text, top_k=10, temperature=0.9)
+    model_file_path = "./gpt_124m.pt"
+    gpt = GPTModel(GPTModelSize.SMALL).load(model_file_path)
+    text_generator = TextGenerator(gpt_model=gpt)
+
+    prompt_text = "Alan Turing theorized that computers would one day become"
+    generate_text = text_generator.generate(
+        prompt_text=prompt_text,
+        max_gen_tokens=40,
+        top_k=10,
+        temperature=1.5,
+    )
     print(generate_text)

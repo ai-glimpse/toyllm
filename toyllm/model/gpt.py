@@ -10,7 +10,14 @@ import torch
 import torch.nn as nn
 from typeguard import typechecked as typechecker
 
-from toyllm.model.config import GPTModelConfig
+from toyllm.model.config import (
+    GPT_124M_MODEL_CONFIG,
+    GPT_355M_MODEL_CONFIG,
+    GPT_774M_MODEL_CONFIG,
+    GPT_1558M_MODEL_CONFIG,
+    GPTModelConfig,
+    GPTModelSize,
+)
 
 GPTInputType: TypeAlias = jaxtyping.Int[torch.Tensor, "batch_size num_tokens"]
 GPTInnerType: TypeAlias = jaxtyping.Float[torch.Tensor, "batch_size num_tokens emb_dim"]
@@ -34,9 +41,9 @@ class MultiHeadAttention(nn.Module):
         self.n_heads = n_heads
         self.head_dim = d_out // n_heads  # Reduce the projection dim to match desired output dim
 
-        self.Wq = nn.Linear(d_in, d_out, bias=qkv_bias)  # Query Weight
-        self.Wk = nn.Linear(d_in, d_out, bias=qkv_bias)  # Key Weight
-        self.Wv = nn.Linear(d_in, d_out, bias=qkv_bias)  # Value Weight
+        self.W_query = nn.Linear(d_in, d_out, bias=qkv_bias)  # Query Weight
+        self.W_key = nn.Linear(d_in, d_out, bias=qkv_bias)  # Key Weight
+        self.W_value = nn.Linear(d_in, d_out, bias=qkv_bias)  # Value Weight
         self.out_proj = nn.Linear(d_out, d_out)  # Linear layer to combine head outputs
         self.dropout = nn.Dropout(dropout_rate)
         self.register_buffer("mask", torch.triu(torch.ones(ctx_len, ctx_len), diagonal=1))
@@ -46,9 +53,9 @@ class MultiHeadAttention(nn.Module):
         batch_size, num_tokens, _d_in = x.shape
 
         # (batch_size, num_tokens, d_in) -> (batch_size, num_tokens, d_out)
-        keys = self.Wk(x)
-        queries = self.Wq(x)
-        values = self.Wv(x)
+        keys = self.W_key(x)
+        queries = self.W_query(x)
+        values = self.W_value(x)
 
         # We implicitly split the matrix by adding a `num_heads` dimension
         # Unroll last dim: (batch_size, num_tokens, d_out) -> (batch_size, num_tokens, num_heads, head_dim)
@@ -160,17 +167,34 @@ class TransformerBlock(nn.Module):
 
 
 class GPTModel(nn.Module):
-    def __init__(self, cfg: GPTModelConfig):
+    def __init__(self, model_size: GPTModelSize):
+        """
+        Args:
+            model_size: Options: SMALL(124M), MEDIUM(355M), LARGE(774M), XLARGE(1558M)
+        """
         super().__init__()
-        self.config = cfg
-        self.tok_emb = nn.Embedding(cfg.vocab_size, cfg.emb_dim)
-        self.pos_emb = nn.Embedding(cfg.ctx_len, cfg.emb_dim)
-        self.drop_emb = nn.Dropout(cfg.drop_rate)
+        self.model_size = model_size
+        self.config = self.get_model_config(self.model_size)
+        self.tok_emb = nn.Embedding(self.config.vocab_size, self.config.emb_dim)
+        self.pos_emb = nn.Embedding(self.config.ctx_len, self.config.emb_dim)
+        self.drop_emb = nn.Dropout(self.config.drop_rate)
 
-        self.trf_blocks = nn.Sequential(*[TransformerBlock(cfg) for _ in range(cfg.n_layers)])
+        self.trf_blocks = nn.Sequential(*[TransformerBlock(self.config) for _ in range(self.config.n_layers)])
 
-        self.final_norm = LayerNorm(cfg.emb_dim)
-        self.out_head = nn.Linear(cfg.emb_dim, cfg.vocab_size, bias=False)
+        self.final_norm = LayerNorm(self.config.emb_dim)
+        self.out_head = nn.Linear(self.config.emb_dim, self.config.vocab_size, bias=False)
+
+    def get_model_config(self, model_size: GPTModelSize) -> GPTModelConfig:
+        if model_size == GPTModelSize.SMALL:
+            return GPT_124M_MODEL_CONFIG
+        elif model_size == GPTModelSize.MEDIUM:
+            return GPT_355M_MODEL_CONFIG
+        elif model_size == GPTModelSize.LARGE:
+            return GPT_774M_MODEL_CONFIG
+        elif model_size == GPTModelSize.XLARGE:
+            return GPT_1558M_MODEL_CONFIG
+        else:
+            raise ValueError(f"Invalid model size: {model_size}")
 
     @jaxtyping.jaxtyped(typechecker=typechecker)
     def forward(self, input_vocab_indexes: GPTInputType) -> GPTOutputType:
@@ -191,3 +215,10 @@ class GPTModel(nn.Module):
     @property
     def device(self) -> torch.device:
         return next(self.parameters()).device
+
+    def save(self) -> None:
+        torch.save(self.state_dict(), f"{self.config.name}.pt")
+
+    def load(self, model_path: str) -> "GPTModel":
+        self.load_state_dict(torch.load(model_path, weights_only=True, map_location=self.device))
+        return self
