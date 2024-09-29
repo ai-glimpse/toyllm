@@ -151,12 +151,12 @@ class TextGenerator:
 if __name__ == "__main__":
     import pathlib
     from toyllm.device import current_device
-    from toyllm.model.config import gpt_config_355_m, gpt_config_124_m
+    from toyllm.model.config import gpt_config_355_m, gpt_config_124_m, gpt_config_774_m
     from toyllm.model.weight import tf, load_gpt2_params_from_tf_ckpt, load_weights_into_gpt
     
-    gpt_config = gpt_config_355_m
+    gpt_config = gpt_config_774_m
     
-    model_dir = "/home/netease/personal/toyllm/models/355M"
+    model_dir = "/home/netease/personal/toyllm/models/774M"
     tf_ckpt_path = tf.train.latest_checkpoint(model_dir)
     params = load_gpt2_params_from_tf_ckpt(tf_ckpt_path, n_layer=gpt_config.n_layers)
     gpt = GPTModel(gpt_config)
@@ -171,3 +171,4 @@ if __name__ == "__main__":
     generate_text = text_generator.generate(prompt_text=prompt_text, max_gen_tokens=40, top_k=50, temperature=0.1)
     print(generate_text)
     print(text_generator.gpt_model.device)
+    # print(gpt)

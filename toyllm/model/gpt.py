@@ -34,9 +34,9 @@ class MultiHeadAttention(nn.Module):
         self.n_heads = n_heads
         self.head_dim = d_out // n_heads  # Reduce the projection dim to match desired output dim
 
-        self.Wq = nn.Linear(d_in, d_out, bias=qkv_bias)  # Query Weight
-        self.Wk = nn.Linear(d_in, d_out, bias=qkv_bias)  # Key Weight
-        self.Wv = nn.Linear(d_in, d_out, bias=qkv_bias)  # Value Weight
+        self.W_query = nn.Linear(d_in, d_out, bias=qkv_bias)  # Query Weight
+        self.W_key = nn.Linear(d_in, d_out, bias=qkv_bias)  # Key Weight
+        self.W_value = nn.Linear(d_in, d_out, bias=qkv_bias)  # Value Weight
         self.out_proj = nn.Linear(d_out, d_out)  # Linear layer to combine head outputs
         self.dropout = nn.Dropout(dropout_rate)
         self.register_buffer("mask", torch.triu(torch.ones(ctx_len, ctx_len), diagonal=1))
@@ -46,9 +46,9 @@ class MultiHeadAttention(nn.Module):
         batch_size, num_tokens, _d_in = x.shape
 
         # (batch_size, num_tokens, d_in) -> (batch_size, num_tokens, d_out)
-        keys = self.Wk(x)
-        queries = self.Wq(x)
-        values = self.Wv(x)
+        keys = self.W_key(x)
+        queries = self.W_query(x)
+        values = self.W_value(x)
 
         # We implicitly split the matrix by adding a `num_heads` dimension
         # Unroll last dim: (batch_size, num_tokens, d_out) -> (batch_size, num_tokens, num_heads, head_dim)

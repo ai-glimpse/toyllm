@@ -46,6 +46,17 @@ gpt_config_355_m = GPTModelConfig(
     qkv_bias=True,
 )
 
+gpt_config_774_m = GPTModelConfig(
+    name = "gpt_774m",
+    vocab_size=50257,
+    ctx_len=1024,
+    emb_dim=1280,
+    n_heads=20,
+    n_layers=36,
+    drop_rate=0.0,
+    qkv_bias=True,
+)
+
 @dataclass
 class GPTTrainingConfig:
     """
