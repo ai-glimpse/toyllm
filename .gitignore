@@ -1,6 +1,7 @@
 # torch
 *.pt
 models/*
+*.pdf
 
 # ide cache
 .vscode
