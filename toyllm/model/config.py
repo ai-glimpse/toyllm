@@ -1,11 +1,12 @@
-from enum import StrEnum
 from dataclasses import dataclass
+from enum import StrEnum
 
 
-class GPTModelSizeEnum(StrEnum):
+class GPTModelSize(StrEnum):
     """
     Enum class for GPT model size
     """
+
     SMALL = "124M"
     MEDIUM = "355M"
     LARGE = "774M"
@@ -25,6 +26,7 @@ class GPTModelConfig:
     :param drop_rate: dropout rate
     :param qkv_bias: query key value bias terms
     """
+
     name: str
     vocab_size: int
     ctx_len: int
@@ -36,7 +38,7 @@ class GPTModelConfig:
 
 
 GPT_124M_MODEL_CONFIG = GPTModelConfig(
-    name = "gpt_124m",
+    name="gpt_124m",
     vocab_size=50257,
     ctx_len=1024,
     emb_dim=768,
@@ -47,7 +49,7 @@ GPT_124M_MODEL_CONFIG = GPTModelConfig(
 )
 
 GPT_355M_MODEL_CONFIG = GPTModelConfig(
-    name = "gpt_355m",
+    name="gpt_355m",
     vocab_size=50257,
     ctx_len=1024,
     emb_dim=1024,
@@ -58,7 +60,7 @@ GPT_355M_MODEL_CONFIG = GPTModelConfig(
 )
 
 GPT_774M_MODEL_CONFIG = GPTModelConfig(
-    name = "gpt_774m",
+    name="gpt_774m",
     vocab_size=50257,
     ctx_len=1024,
     emb_dim=1280,
@@ -70,7 +72,7 @@ GPT_774M_MODEL_CONFIG = GPTModelConfig(
 
 
 GPT_1558M_MODEL_CONFIG = GPTModelConfig(
-    name = "gpt_1558m",
+    name="gpt_1558m",
     vocab_size=50257,
     ctx_len=1024,
     emb_dim=1600,
@@ -79,6 +81,7 @@ GPT_1558M_MODEL_CONFIG = GPTModelConfig(
     drop_rate=0.0,
     qkv_bias=True,
 )
+
 
 @dataclass
 class GPTTrainingConfig:

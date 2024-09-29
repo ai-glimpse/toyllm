@@ -1,5 +1,4 @@
 import logging
-import pathlib
 from typing import Optional
 
 import jaxtyping
@@ -129,16 +128,17 @@ class TextGenerator:
 
 
 if __name__ == "__main__":
-    from toyllm.model.config import GPTModelSizeEnum
+    from toyllm.model.config import GPTModelSize
 
     model_file_path = "./gpt_124m.pt"
-    gpt = GPTModel(GPTModelSizeEnum.SMALL).load(model_file_path)
+    gpt = GPTModel(GPTModelSize.SMALL).load(model_file_path)
     text_generator = TextGenerator(gpt_model=gpt)
 
     prompt_text = "Alan Turing theorized that computers would one day become"
-    generate_text = text_generator.generate(prompt_text=prompt_text,
-                                            max_gen_tokens=40,
-                                            top_k=10,
-                                            temperature=1.5,
-                                            )
+    generate_text = text_generator.generate(
+        prompt_text=prompt_text,
+        max_gen_tokens=40,
+        top_k=10,
+        temperature=1.5,
+    )
     print(generate_text)

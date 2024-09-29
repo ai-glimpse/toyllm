@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader
 
 from toyllm.dataset import GPTDataloader
 from toyllm.device import current_device
-from toyllm.model.config import GPTModelConfig, GPTTrainingConfig
+from toyllm.model.config import GPTModelConfig, GPTTrainingConfig, GPTModelSize
 from toyllm.model.generate import TextGenerator
 from toyllm.model.gpt import GPTModel
 from toyllm.tokenizer import get_gpt2_tokenizer
@@ -124,12 +124,12 @@ def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses):
 
 def main(
     text: str,
-    gpt_config: GPTModelConfig,
+    gpt_size: GPTModelSize,
     training_config: GPTTrainingConfig,
 ):
     torch.manual_seed(123)
     # Initialize model
-    model = GPTModel(gpt_config)
+    model = GPTModel(gpt_size)
     model.to(current_device)
     optimizer = torch.optim.AdamW(
         model.parameters(), lr=training_config.learning_rate, weight_decay=training_config.weight_decay
@@ -138,8 +138,8 @@ def main(
 
     gpt_data_loader = GPTDataloader(
         tokenizer=tokenizer,
-        max_length=gpt_config.ctx_len,
-        stride=gpt_config.ctx_len,
+        max_length=gpt_size.ctx_len,
+        stride=gpt_size.ctx_len,
         batch_size=training_config.batch_size,
     )
     train_loader, val_loader = get_data_loaders(text, gpt_data_loader=gpt_data_loader, train_ratio=0.9)
@@ -161,13 +161,13 @@ def main(
 
 if __name__ == "__main__":
     from toyllm.dataset import read_simple_text_file
-    from toyllm.model.config import GPTTrainingConfig, GPT_124M_MODEL_CONFIG
+    from toyllm.model.config import GPTModelSize, GPTTrainingConfig
 
     training_config = GPTTrainingConfig(learning_rate=5e-4, num_epochs=40, batch_size=2, weight_decay=0.1)
 
     text = read_simple_text_file()
     # Initiate training
-    train_losses, val_losses, tokens_seen, model = main(text, GPT_124M_MODEL_CONFIG, training_config)
+    train_losses, val_losses, tokens_seen, model = main(text, GPTModelSize.SMALL, training_config)
 
     # After training
 

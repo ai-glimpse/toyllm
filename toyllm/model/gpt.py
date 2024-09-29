@@ -10,13 +10,14 @@ import torch
 import torch.nn as nn
 from typeguard import typechecked as typechecker
 
-from toyllm.model.config import (GPTModelConfig,
-                                 GPTModelSizeEnum,
-                                 GPT_124M_MODEL_CONFIG,
-                                 GPT_355M_MODEL_CONFIG,
-                                 GPT_774M_MODEL_CONFIG,
-                                 GPT_1558M_MODEL_CONFIG,
-                                 )
+from toyllm.model.config import (
+    GPT_124M_MODEL_CONFIG,
+    GPT_355M_MODEL_CONFIG,
+    GPT_774M_MODEL_CONFIG,
+    GPT_1558M_MODEL_CONFIG,
+    GPTModelConfig,
+    GPTModelSize,
+)
 
 GPTInputType: TypeAlias = jaxtyping.Int[torch.Tensor, "batch_size num_tokens"]
 GPTInnerType: TypeAlias = jaxtyping.Float[torch.Tensor, "batch_size num_tokens emb_dim"]
@@ -166,7 +167,7 @@ class TransformerBlock(nn.Module):
 
 
 class GPTModel(nn.Module):
-    def __init__(self, model_size: GPTModelSizeEnum):
+    def __init__(self, model_size: GPTModelSize):
         """
         Args:
             model_size: Options: SMALL(124M), MEDIUM(355M), LARGE(774M), XLARGE(1558M)
@@ -183,14 +184,14 @@ class GPTModel(nn.Module):
         self.final_norm = LayerNorm(self.config.emb_dim)
         self.out_head = nn.Linear(self.config.emb_dim, self.config.vocab_size, bias=False)
 
-    def get_model_config(self, model_size: GPTModelSizeEnum) -> GPTModelConfig:
-        if model_size == GPTModelSizeEnum.SMALL:
+    def get_model_config(self, model_size: GPTModelSize) -> GPTModelConfig:
+        if model_size == GPTModelSize.SMALL:
             return GPT_124M_MODEL_CONFIG
-        elif model_size == GPTModelSizeEnum.MEDIUM:
+        elif model_size == GPTModelSize.MEDIUM:
             return GPT_355M_MODEL_CONFIG
-        elif model_size == GPTModelSizeEnum.LARGE:
+        elif model_size == GPTModelSize.LARGE:
             return GPT_774M_MODEL_CONFIG
-        elif model_size == GPTModelSizeEnum.XLARGE:
+        elif model_size == GPTModelSize.XLARGE:
             return GPT_1558M_MODEL_CONFIG
         else:
             raise ValueError(f"Invalid model size: {model_size}")
@@ -214,10 +215,10 @@ class GPTModel(nn.Module):
     @property
     def device(self) -> torch.device:
         return next(self.parameters()).device
-    
+
     def save(self) -> None:
         torch.save(self.state_dict(), f"{self.config.name}.pt")
-    
+
     def load(self, model_path: str) -> "GPTModel":
         self.load_state_dict(torch.load(model_path, weights_only=True, map_location=self.device))
         return self
