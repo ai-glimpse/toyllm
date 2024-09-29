@@ -129,7 +129,10 @@ class TextGenerator:
 
 
 if __name__ == "__main__":
-    gpt = GPTModel("124M").load("gpt_124m.pt")
+    from toyllm.model.config import GPTModelSizeEnum
+
+    model_file_path = "./gpt_124m.pt"
+    gpt = GPTModel(GPTModelSizeEnum.SMALL).load(model_file_path)
     text_generator = TextGenerator(gpt_model=gpt)
 
     prompt_text = "Alan Turing theorized that computers would one day become"

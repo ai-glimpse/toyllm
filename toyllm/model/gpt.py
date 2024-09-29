@@ -219,5 +219,5 @@ class GPTModel(nn.Module):
         torch.save(self.state_dict(), f"{self.config.name}.pt")
     
     def load(self, model_path: str) -> "GPTModel":
-        self.load_state_dict(torch.load(model_path, weights_only=True))
+        self.load_state_dict(torch.load(model_path, weights_only=True, map_location=self.device))
         return self
