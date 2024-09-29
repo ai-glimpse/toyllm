@@ -63,7 +63,7 @@ def evaluate_model(model, train_loader, val_loader, eval_iter):
 
 def generate_and_print_sample(model, tokenizer, start_context):
     model.eval()
-    text_generate = TextGenerator(model_instance=model, tokenizer=tokenizer)
+    text_generate = TextGenerator(gpt_model=model, tokenizer=tokenizer)
     generate_text = text_generate.generate(prompt_text=start_context, max_gen_tokens=50, temperature=0.9, top_k=10)
     print(generate_text.replace("\n", " "))  # Compact print format
     model.train()
