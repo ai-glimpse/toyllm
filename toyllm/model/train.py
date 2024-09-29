@@ -161,13 +161,13 @@ def main(
 
 if __name__ == "__main__":
     from toyllm.dataset import read_simple_text_file
-    from toyllm.model.config import GPTTrainingConfig, gpt_config_124_m
+    from toyllm.model.config import GPTTrainingConfig, GPT_124M_MODEL_CONFIG
 
     training_config = GPTTrainingConfig(learning_rate=5e-4, num_epochs=40, batch_size=2, weight_decay=0.1)
 
     text = read_simple_text_file()
     # Initiate training
-    train_losses, val_losses, tokens_seen, model = main(text, gpt_config_124_m, training_config)
+    train_losses, val_losses, tokens_seen, model = main(text, GPT_124M_MODEL_CONFIG, training_config)
 
     # After training
 

@@ -129,16 +129,13 @@ class TextGenerator:
 
 
 if __name__ == "__main__":
-    from toyllm.model.config import gpt_config_124_m
-    
-    gpt = GPTModel(gpt_config_124_m).load("gpt_124m.pt")
+    gpt = GPTModel("124M").load("gpt_124m.pt")
     text_generator = TextGenerator(gpt_model=gpt)
 
     prompt_text = "Alan Turing theorized that computers would one day become"
     generate_text = text_generator.generate(prompt_text=prompt_text,
                                             max_gen_tokens=40,
-                                            top_k=50,
-                                            temperature=0.1,
+                                            top_k=10,
+                                            temperature=1.5,
                                             )
     print(generate_text)
-    print(text_generator.gpt_model.device)

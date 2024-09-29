@@ -10,7 +10,13 @@ import torch
 import torch.nn as nn
 from typeguard import typechecked as typechecker
 
-from toyllm.model.config import GPTModelConfig
+from toyllm.model.config import (GPTModelConfig,
+                                 GPTModelSizeEnum,
+                                 GPT_124M_MODEL_CONFIG,
+                                 GPT_355M_MODEL_CONFIG,
+                                 GPT_774M_MODEL_CONFIG,
+                                 GPT_1558M_MODEL_CONFIG,
+                                 )
 
 GPTInputType: TypeAlias = jaxtyping.Int[torch.Tensor, "batch_size num_tokens"]
 GPTInnerType: TypeAlias = jaxtyping.Float[torch.Tensor, "batch_size num_tokens emb_dim"]
@@ -160,17 +166,34 @@ class TransformerBlock(nn.Module):
 
 
 class GPTModel(nn.Module):
-    def __init__(self, cfg: GPTModelConfig):
+    def __init__(self, model_size: GPTModelSizeEnum):
+        """
+        Args:
+            model_size: Options: SMALL(124M), MEDIUM(355M), LARGE(774M), XLARGE(1558M)
+        """
         super().__init__()
-        self.config = cfg
-        self.tok_emb = nn.Embedding(cfg.vocab_size, cfg.emb_dim)
-        self.pos_emb = nn.Embedding(cfg.ctx_len, cfg.emb_dim)
-        self.drop_emb = nn.Dropout(cfg.drop_rate)
+        self.model_size = model_size
+        self.config = self.get_model_config(self.model_size)
+        self.tok_emb = nn.Embedding(self.config.vocab_size, self.config.emb_dim)
+        self.pos_emb = nn.Embedding(self.config.ctx_len, self.config.emb_dim)
+        self.drop_emb = nn.Dropout(self.config.drop_rate)
 
-        self.trf_blocks = nn.Sequential(*[TransformerBlock(cfg) for _ in range(cfg.n_layers)])
+        self.trf_blocks = nn.Sequential(*[TransformerBlock(self.config) for _ in range(self.config.n_layers)])
 
-        self.final_norm = LayerNorm(cfg.emb_dim)
-        self.out_head = nn.Linear(cfg.emb_dim, cfg.vocab_size, bias=False)
+        self.final_norm = LayerNorm(self.config.emb_dim)
+        self.out_head = nn.Linear(self.config.emb_dim, self.config.vocab_size, bias=False)
+
+    def get_model_config(self, model_size: GPTModelSizeEnum) -> GPTModelConfig:
+        if model_size == GPTModelSizeEnum.SMALL:
+            return GPT_124M_MODEL_CONFIG
+        elif model_size == GPTModelSizeEnum.MEDIUM:
+            return GPT_355M_MODEL_CONFIG
+        elif model_size == GPTModelSizeEnum.LARGE:
+            return GPT_774M_MODEL_CONFIG
+        elif model_size == GPTModelSizeEnum.XLARGE:
+            return GPT_1558M_MODEL_CONFIG
+        else:
+            raise ValueError(f"Invalid model size: {model_size}")
 
     @jaxtyping.jaxtyped(typechecker=typechecker)
     def forward(self, input_vocab_indexes: GPTInputType) -> GPTOutputType:

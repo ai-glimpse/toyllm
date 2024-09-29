@@ -1,4 +1,15 @@
+from enum import StrEnum
 from dataclasses import dataclass
+
+
+class GPTModelSizeEnum(StrEnum):
+    """
+    Enum class for GPT model size
+    """
+    SMALL = "124M"
+    MEDIUM = "355M"
+    LARGE = "774M"
+    XLARGE = "1558M"
 
 
 @dataclass
@@ -24,7 +35,7 @@ class GPTModelConfig:
     qkv_bias: bool
 
 
-gpt_config_124_m = GPTModelConfig(
+GPT_124M_MODEL_CONFIG = GPTModelConfig(
     name = "gpt_124m",
     vocab_size=50257,
     ctx_len=1024,
@@ -35,7 +46,7 @@ gpt_config_124_m = GPTModelConfig(
     qkv_bias=True,
 )
 
-gpt_config_355_m = GPTModelConfig(
+GPT_355M_MODEL_CONFIG = GPTModelConfig(
     name = "gpt_355m",
     vocab_size=50257,
     ctx_len=1024,
@@ -46,13 +57,25 @@ gpt_config_355_m = GPTModelConfig(
     qkv_bias=True,
 )
 
-gpt_config_774_m = GPTModelConfig(
+GPT_774M_MODEL_CONFIG = GPTModelConfig(
     name = "gpt_774m",
     vocab_size=50257,
     ctx_len=1024,
     emb_dim=1280,
     n_heads=20,
     n_layers=36,
+    drop_rate=0.0,
+    qkv_bias=True,
+)
+
+
+GPT_1558M_MODEL_CONFIG = GPTModelConfig(
+    name = "gpt_1558m",
+    vocab_size=50257,
+    ctx_len=1024,
+    emb_dim=1600,
+    n_heads=25,
+    n_layers=48,
     drop_rate=0.0,
     qkv_bias=True,
 )
