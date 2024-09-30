@@ -167,7 +167,7 @@ class TransformerBlock(nn.Module):
 
 
 class GPTModel(nn.Module):
-    def __init__(self, model_size: GPTModelSize):
+    def __init__(self, model_size: str | GPTModelSize):
         """
         Args:
             model_size: Options: SMALL(124M), MEDIUM(355M), LARGE(774M), XLARGE(1558M)
@@ -184,7 +184,7 @@ class GPTModel(nn.Module):
         self.final_norm = LayerNorm(self.config.emb_dim)
         self.out_head = nn.Linear(self.config.emb_dim, self.config.vocab_size, bias=False)
 
-    def get_model_config(self, model_size: GPTModelSize) -> GPTModelConfig:
+    def get_model_config(self, model_size: str | GPTModelSize) -> GPTModelConfig:
         if model_size == GPTModelSize.SMALL:
             return GPT_124M_MODEL_CONFIG
         elif model_size == GPTModelSize.MEDIUM:
