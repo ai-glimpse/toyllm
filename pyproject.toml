@@ -61,6 +61,9 @@ docs = [
     "mkdocs-bibtex",
     "mkdocstrings-python",
 ]
+example = [
+    "marimo>=0.8.22",
+]
 
 [tool.setuptools]
 zip-safe = true

@@ -130,7 +130,7 @@ class TextGenerator:
 if __name__ == "__main__":
     from toyllm.model.config import GPTModelSize
 
-    model_file_path = "./gpt_124m.pt"
+    model_file_path = "./models/gpt_124m.pt"
     gpt = GPTModel(GPTModelSize.SMALL).load(model_file_path)
     text_generator = TextGenerator(gpt_model=gpt)
 
