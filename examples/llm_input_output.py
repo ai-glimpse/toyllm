@@ -8,7 +8,7 @@ app = marimo.App(width="medium")
 def __():
     import marimo as mo
 
-    mo.md("""# LLM GLimpse: A Top-Down Approach""").center()
+    mo.md("""# LLM Glimpse: A Top-Down Approach""").center()
     return (mo,)
 
 
@@ -32,7 +32,7 @@ def __():
 
 @app.cell
 def __(mo):
-    mo.md(r"""## Prompt & Response""")
+    mo.md(r"""## 1. Overview: Prompt & Response""")
     return
 
 
@@ -58,7 +58,7 @@ def __(mo, prompt_text, text_generator):
 
 @app.cell
 def __(mo):
-    mo.md(r"""## Prompt -> First Token in Response -> ... -> Full Response""")
+    mo.md(r"""## 2. The steps: Prompt -> First Token in Response -> ... -> Full Response""")
     return
 
 
@@ -77,7 +77,13 @@ def __(mo, prompt_text):
 
 @app.cell
 def __(mo):
-    mo.md(r"""## Prompt -> First Token in Response""")
+    mo.md(r"""## 3. The details: Prompt -> First Token in Response""")
+    return
+
+
+@app.cell
+def __(mo):
+    mo.md(r"""### 3.1 Prompt text -> Prompt tokens""")
     return
 
 
@@ -103,9 +109,15 @@ def __(gpt2_tokenizer, mo, prompt_tokens):
 def __(mo, prompt_tokens, text_generator, torch):
     prompt_tokens_tensor = torch.tensor(prompt_tokens).unsqueeze(0)[:, -text_generator.context_length :]
 
-    mo.md(f"""Transform the prompt token into torch tensor and truncate it by context length(**{text_generator.context_length}**), \n
-    then we got prompt_tokens_tensor **{prompt_tokens_tensor}** with shape **{prompt_tokens_tensor.shape}**""")
+    mo.md(f"""Transform the prompt token into torch tensor and truncate it by context length(**{text_generator.context_length}**). \n
+    Then we got prompt_tokens_tensor **{prompt_tokens_tensor}** with shape **{prompt_tokens_tensor.shape}**""")
     return (prompt_tokens_tensor,)
+
+
+@app.cell
+def __(mo):
+    mo.md(r"""### 3.2 Prompt tokens -> Next token logits""")
+    return
 
 
 @app.cell
@@ -126,6 +138,12 @@ def __(logits, mo):
 
 
 @app.cell
+def __(mo):
+    mo.md(r"""### 3.3 Next token logits -> Next Token(First Token in Response)""")
+    return
+
+
+@app.cell
 def __(logits_last, mo, text_generator, torch):
     logits_last_with_top_k = text_generator._logits_top_k_filter(logits_last, top_k=10)
     next_token_id = torch.argmax(logits_last_with_top_k, dim=-1, keepdim=True)
@@ -141,6 +159,18 @@ def __(gpt2_tokenizer, mo, next_token_id):
 
     mo.md(f"""Decode with the gpt2 tokenizer, we get the next token: **'{next_token}'**""")
     return (next_token,)
+
+
+@app.cell
+def __(mo):
+    mo.md(r"""### 3.4 Next Token(First Token in Response) -> Full Response""")
+    return
+
+
+@app.cell
+def __(mo):
+    mo.md("Add the first token in response, we got a new prompt, feed it into the llm, we got a new next token, ..., finally we will got the full response as shown in beginning!")
+    return
 
 
 @app.cell
