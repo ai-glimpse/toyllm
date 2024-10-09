@@ -10,6 +10,8 @@ copyright: Copyright &copy; 2024 Xiangzhuang Shen
 nav:
   - Home: index.md
   - Changelog: changelog.md
+  - Blog:
+      - blog/index.md
 
 theme:
   name: material
@@ -92,6 +94,8 @@ markdown_extensions:
   - footnotes
 
 plugins:
+  - blog:
+      draft: false
   - search
   - bibtex:
       bib_file: "docs/references.bib"
