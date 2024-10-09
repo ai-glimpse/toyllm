@@ -60,6 +60,8 @@ docs = [
     "mkdocstrings",
     "mkdocs-bibtex",
     "mkdocstrings-python",
+    "mkdocs-git-committers-plugin-2>=2.4.1",
+    "mkdocs-git-revision-date-localized-plugin>=1.2.9",
 ]
 example = [
     "marimo>=0.8.22",
