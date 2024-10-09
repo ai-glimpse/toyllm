@@ -150,21 +150,30 @@ class TextGenerator:
 
 if __name__ == "__main__":
     import pathlib
+
     from toyllm.device import current_device
-    from toyllm.model.config import gpt_config_355_m, gpt_config_124_m, gpt_config_774_m
-    from toyllm.model.weight import tf, load_gpt2_params_from_tf_ckpt, load_weights_into_gpt
-    
+    from toyllm.model.config import (
+        gpt_config_124_m,
+        gpt_config_355_m,
+        gpt_config_774_m,
+        gpt_config_1558_m,
+    )
+    from toyllm.model.weight import (
+        load_gpt2_params_from_tf_ckpt,
+        load_weights_into_gpt,
+        tf,
+    )
+
     gpt_config = gpt_config_774_m
-    
-    model_dir = "/home/netease/personal/toyllm/models/774M"
+
+    model_dir = "/home/mathewshen/Workspace/Projects/github/toyllm/models/774M"
     tf_ckpt_path = tf.train.latest_checkpoint(model_dir)
     params = load_gpt2_params_from_tf_ckpt(tf_ckpt_path, n_layer=gpt_config.n_layers)
     gpt = GPTModel(gpt_config)
     gpt = gpt.to(current_device)
     load_weights_into_gpt(gpt, params)
     gpt.save()
-    
-    
+
     text_generator = TextGenerator(model_instance=gpt)
 
     prompt_text = "Alan Turing theorized that computers would one day become"
