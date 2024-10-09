@@ -96,6 +96,12 @@ markdown_extensions:
   - footnotes
 
 plugins:
+  - git-revision-date-localized:
+      enable_creation_date: true
+  - git-committers:
+      repository: ai-glimpse/toyllm
+      branch: master
+      token: !ENV [ "ORG_MKDOCS_GIT_COMMITTERS_APIKEY" ]
   - blog:
       draft: false
   - search
