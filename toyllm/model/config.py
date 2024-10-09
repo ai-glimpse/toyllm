@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from enum import StrEnum
+from enum import StrEnum  # type: ignore[attr-defined]
 
 
 class GPTModelSize(StrEnum):

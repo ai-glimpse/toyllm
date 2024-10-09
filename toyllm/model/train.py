@@ -124,7 +124,7 @@ def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses):
 
 def main(
     text: str,
-    gpt_size: GPTModelSize,
+    gpt_size: str | GPTModelSize,
     training_config: GPTTrainingConfig,
 ):
     torch.manual_seed(123)
