@@ -5,7 +5,7 @@ date: 2024-03-22
 authors: [mathew]
 slug: about-llm-glimpses
 description: >
-    LLM Glimpses is a collection of essays that try to explain 
+    LLM Glimpses is a collection of essays that try to explain
     the Large Language Model world in a simple way.
 categories:
   - General
