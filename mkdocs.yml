@@ -1,7 +1,6 @@
 site_name: ToyLLM
 repo_url: https://github.com/toy-ai/toyllm
-repo_name: toy-ai/toyllm
-edit_uri: ""
+repo_name: ai-glimpse/toyllm
 site_description: Toy LLM
 site_author: Xiangzhuang Shen
 copyright: Copyright &copy; 2024 Xiangzhuang Shen
@@ -34,6 +33,9 @@ theme:
         icon: material/weather-night
         name: Switch to light mode
   features:
+    - content.code.copy
+    - content.action.edit
+    - content.action.view
     # - announce.dismiss
     - content.code.annotate
     # - content.tabs.link
