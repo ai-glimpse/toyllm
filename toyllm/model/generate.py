@@ -121,8 +121,9 @@ class TextGenerator:
     def _logits_temperature_scale(
         logits: jaxtyping.Float[torch.Tensor, "batch_size vocab_size"],
         temperature: float,
+        eps: float = 1e-10,
     ) -> jaxtyping.Float[torch.Tensor, "batch_size vocab_size"]:
-        logits = logits / temperature
+        logits = logits / (temperature + eps)
         probs = torch.softmax(logits, dim=-1)
         return probs
 
@@ -136,6 +137,6 @@ if __name__ == "__main__":
         prompt_text=prompt_text,
         max_gen_tokens=40,
         top_k=10,
-        temperature=1.5,
+        temperature=0,
     )
     print(generate_text)
