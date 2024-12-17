@@ -12,12 +12,10 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - "3.11"
           - "3.12"
         os:
-          - ubuntu-latest
-      #          - macos-latest
-      #          - windows-latest
+          - ubuntu-22.04
+
       fail-fast: false
     runs-on: ${{ matrix.os }}
     env:
