@@ -14,7 +14,7 @@ jobs:
         python-version:
           - "3.12"
         os:
-          - ubuntu-22.04
+          - ubuntu-latest
 
       fail-fast: false
     runs-on: ${{ matrix.os }}
@@ -22,10 +22,7 @@ jobs:
       UV_HTTP_TIMEOUT: 900 # max 15min to install deps
     steps:
       - name: Setup pandoc
-        run: |
-          wget https://github.com/jgm/pandoc/releases/download/2.18/pandoc-2.18-1-amd64.deb && sudo dpkg -i pandoc-2.18-1-amd64.deb
-          sudo apt-get install pandoc-citeproc
-
+        uses: pandoc/actions/setup@v1
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -52,14 +49,12 @@ jobs:
     name: Deploy docs
     needs: build
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     env:
       UV_HTTP_TIMEOUT: 900 # max 15min to install deps
     steps:
       - name: Setup pandoc
-        run: |
-          wget https://github.com/jgm/pandoc/releases/download/2.18/pandoc-2.18-1-amd64.deb && sudo dpkg -i pandoc-2.18-1-amd64.deb
-          sudo apt-get install pandoc-citeproc
+        uses: pandoc/actions/setup@v1
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
