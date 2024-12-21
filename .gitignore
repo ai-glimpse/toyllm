@@ -1,3 +1,6 @@
+# test
+junit.xml
+
 # torch
 *.pt
 models/*
