@@ -93,9 +93,7 @@ def train_model_simple(model, train_loader, val_loader, optimizer, num_epochs, e
                 train_losses.append(train_loss)
                 val_losses.append(val_loss)
                 track_tokens_seen.append(tokens_seen)
-                print(
-                    f"Ep {epoch+1} (Step {global_step:06d}): " f"Train loss {train_loss:.3f}, Val loss {val_loss:.3f}"
-                )
+                print(f"Ep {epoch + 1} (Step {global_step:06d}): Train loss {train_loss:.3f}, Val loss {val_loss:.3f}")
 
         # Print a sample text after each epoch
         generate_and_print_sample(model, train_loader.dataset.tokenizer, start_context)

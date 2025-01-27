@@ -67,9 +67,9 @@ def __(mo, prompt_text):
     mo.md(
         f"""Given the prompt: *{prompt_text}*, \n
     LLM generate the next token: **' the'** \n
-    After that we change the prompt to: *{prompt_text}***{' the'}**\n
+    After that we change the prompt to: *{prompt_text}***{" the"}**\n
     LLM generate the next token: **' most'** \n
-    After that we change the prompt to: *{prompt_text}***{' the most'}**\n
+    After that we change the prompt to: *{prompt_text}***{" the most"}**\n
     ... ... \n
     Finally, we got the full response as shown before!
     """
