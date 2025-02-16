@@ -10,7 +10,7 @@ import torch
 import torch.nn as nn
 from typeguard import typechecked as typechecker
 
-from toyllm.model.config import (
+from toyllm.gpt2.config import (
     GPT_124M_MODEL_CONFIG,
     GPT_355M_MODEL_CONFIG,
     GPT_774M_MODEL_CONFIG,
