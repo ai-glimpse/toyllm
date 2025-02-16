@@ -7,8 +7,8 @@ import torch
 from typeguard import typechecked as typechecker
 
 from toyllm.device import current_device
-from toyllm.model.gpt import GPTModel
-from toyllm.tokenizer import gpt2_tokenizer, text_to_token_ids, token_ids_to_text
+from toyllm.gpt2.gpt import GPTModel
+from toyllm.gpt2.tokenizer import gpt2_tokenizer, text_to_token_ids, token_ids_to_text
 
 logger = logging.getLogger(__name__)
 

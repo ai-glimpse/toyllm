@@ -10,12 +10,12 @@ import matplotlib.pyplot as plt
 import torch
 from torch.utils.data import DataLoader
 
-from toyllm.dataset import GPTDataloader
 from toyllm.device import current_device
-from toyllm.model.config import GPTModelSize, GPTTrainingConfig
-from toyllm.model.generate import TextGenerator
-from toyllm.model.gpt import GPTModel
-from toyllm.tokenizer import get_gpt2_tokenizer
+from toyllm.gpt2.config import GPTModelSize, GPTTrainingConfig
+from toyllm.gpt2.dataset import GPTDataloader
+from toyllm.gpt2.generate import TextGenerator
+from toyllm.gpt2.gpt import GPTModel
+from toyllm.gpt2.tokenizer import get_gpt2_tokenizer
 
 
 def get_data_loaders(
@@ -158,8 +158,8 @@ def main(
 
 
 if __name__ == "__main__":
-    from toyllm.dataset import read_simple_text_file
-    from toyllm.model.config import GPTModelSize, GPTTrainingConfig
+    from toyllm.gpt2.config import GPTModelSize, GPTTrainingConfig
+    from toyllm.gpt2.dataset import read_simple_text_file
 
     training_config = GPTTrainingConfig(learning_rate=5e-4, num_epochs=40, batch_size=2, weight_decay=0.1)
 
