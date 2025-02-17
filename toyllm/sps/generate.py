@@ -9,7 +9,7 @@ from toyllm.sps.models import BaseSpsModel
 
 
 @dataclass
-class TextGenerator:
+class SpsTextGenerator:
     tokenizer: tiktoken.Encoding
     target_model: BaseSpsModel
     draft_model: BaseSpsModel
@@ -32,7 +32,7 @@ class TextGenerator:
         prompt_tokens = torch.tensor(text_id_list).unsqueeze(0).to(self.target_model.device())  # add batch dimension
         generated_tokens: list[torch.Tensor] = []
 
-        while len(generated_tokens) < min_gen_tokens:
+        while len(generated_tokens) <= min_gen_tokens:
             # Get the predictions
             # use `inference_mode` rather than `no_grad`(https://stackoverflow.com/questions/74191070)
             with torch.inference_mode():
@@ -40,7 +40,7 @@ class TextGenerator:
                 lookahead_tuples = []
                 draft_prompt_tokens = prompt_tokens.clone()
                 for _ in range(self.lookahead):
-                    draft_next_token_ids, draft_next_token_logits = self._get_logits_and_next_token_id(
+                    draft_next_token_ids, draft_next_token_logits = self._get_next_token_id_and_probs(
                         draft_prompt_tokens,
                         context_length,
                         self.draft_model,
@@ -70,14 +70,14 @@ class TextGenerator:
                         .cpu()
                         .item(),
                     ):
-                        print("Accept!")
+                        # print("Accept!")
                         next_generated_token = draft_next_token_id
                         generated_tokens.append(next_generated_token)
                         # Update prompt tokens
                         prompt_tokens = torch.cat((prompt_tokens, next_generated_token.unsqueeze(0)), dim=1)
                     else:
                         all_accept = False
-                        print("Reject!")
+                        # print("Reject!")
                         prob_diff = target_next_token_probs - draft_next_token_logits
                         # element-wise max to 0
                         prob_diff = torch.clamp(prob_diff, min=0)
@@ -88,7 +88,7 @@ class TextGenerator:
                         prompt_tokens = torch.cat((prompt_tokens, next_generated_token.unsqueeze(0)), dim=1)
                         break
                 if all_accept:
-                    print("All accept!")
+                    # print("All accept!")
                     next_generated_token = torch.multinomial(target_model_probs[-1], num_samples=1)
                     generated_tokens.append(next_generated_token)
                     # Update prompt tokens
@@ -97,8 +97,8 @@ class TextGenerator:
         generate_text = self.tokenizer.decode(prompt_tokens.squeeze(0).tolist())
         return generate_text
 
-    def _get_logits_and_next_token_id(
-        self,
+    @staticmethod
+    def _get_next_token_id_and_probs(
         prompt_tokens: torch.Tensor,
         context_length: int,
         model: BaseSpsModel,
@@ -106,9 +106,6 @@ class TextGenerator:
         eps: float = 1e-8,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         # Crop current context if it exceeds the supported context size(ctx_len)
-        # E.g., if LLM supports only 5 tokens, and the context size is 10
-        # then only the last 5 tokens are used as context
-
         # (batch, n_tokens) --(crop context)--> (batch, n_tokens' = min(ctx_len, n_tokens))
         context_text_token_ids = prompt_tokens[:, -context_length:]
         logits = model.get_next_token_logits(prompt_token=context_text_token_ids)
@@ -124,8 +121,8 @@ class TextGenerator:
 
         return next_token_id, probs
 
+    @staticmethod
     def _get_latest_n_token_probs(
-        self,
         prompt_tokens: torch.Tensor,
         n: int,
         context_length: int,
@@ -133,10 +130,6 @@ class TextGenerator:
         temperature: Optional[float] = None,
         eps: float = 1e-8,
     ) -> torch.Tensor:
-        # Crop current context if it exceeds the supported context size(ctx_len)
-        # E.g., if LLM supports only 5 tokens, and the context size is 10
-        # then only the last 5 tokens are used as context
-
         # (batch, n_tokens) --(crop context)--> (batch, n_tokens' = min(ctx_len, n_tokens))
         context_text_token_ids = prompt_tokens[:, -context_length:]
         logits = model.get_next_token_logits(prompt_token=context_text_token_ids)
@@ -154,7 +147,10 @@ if __name__ == "__main__":
     from toyllm.gpt2.tokenizer import get_gpt2_tokenizer
     from toyllm.sps.models import DraftModelGPT2, TargetModelGPT2
 
-    text_generator = TextGenerator(
+    prompt_text = "Alan Turing theorized that computers would one day become"
+
+    # Test the speculative sampling
+    sps_text_generator = SpsTextGenerator(
         tokenizer=get_gpt2_tokenizer(),
         target_model=TargetModelGPT2(),
         draft_model=DraftModelGPT2(),
@@ -162,12 +158,33 @@ if __name__ == "__main__":
     )
 
     start_time = time.time()
-    prompt_text = "Alan Turing theorized that computers would one day become"
-    generate_text = text_generator.generate(
+    generate_text = sps_text_generator.generate(
         prompt_text=prompt_text,
-        min_gen_tokens=40,
+        min_gen_tokens=256,
         temperature=0,
     )
-    print(generate_text)
     end_time = time.time()
-    print("Time elapsed: {:.2f}s".format(end_time - start_time))
+    print(
+        f"[Speculative Sampling]: Time elapsed: {end_time - start_time:.2f}s\n"
+        f"Prompt: {prompt_text}\n"
+        f"Generated: {generate_text[:200]}"
+    )
+
+    # Test the GPT2 model
+    from toyllm.gpt2.generate import TextGenerator as GptTextGenerator
+    from toyllm.gpt2.gpt import GPTModel
+
+    gpt = GPTModel("1558M").load("../../models/gpt_1558m.pt")
+    gpt_text_generator = GptTextGenerator(gpt_model=gpt)
+
+    start_time = time.time()
+    generate_text = gpt_text_generator.generate(
+        prompt_text=prompt_text,
+        max_gen_tokens=256,
+    )
+    end_time = time.time()
+    print(
+        f"[Naive GPT2 Auto-Regressive]: Time elapsed: {end_time - start_time:.2f}s\n"
+        f"Prompt: {prompt_text}\n"
+        f"Generated: {generate_text[:200]}"
+    )

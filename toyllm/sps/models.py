@@ -22,7 +22,7 @@ class BaseSpsModel(ABC):
 
 class TargetModelGPT2(BaseSpsModel):
     def __init__(self):
-        self.gpt_model = GPTModel("355M").load("../../models/gpt_355m.pt")
+        self.gpt_model = GPTModel("1558M").load("../../models/gpt_1558m.pt")
         self.gpt_model.eval()
         if self.gpt_model.device != current_device:
             self.gpt_model.to(current_device)
