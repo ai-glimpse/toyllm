@@ -3,9 +3,7 @@ from dataclasses import dataclass
 from toyllm.sps.models import BaseSpsModel
 import tiktoken
 from typing import Optional
-import jaxtyping
 import numpy as np
-from typeguard import typechecked as typechecker
 
 
 @dataclass
@@ -29,7 +27,7 @@ class TextGenerator:
         
         # prompt text to tokens: (1, n_tokens)
         text_id_list = self.tokenizer.encode(prompt_text)
-        prompt_tokens = torch.tensor(text_id_list).unsqueeze(0)  # add batch dimension
+        prompt_tokens = torch.tensor(text_id_list).unsqueeze(0).to(self.target_model.device())  # add batch dimension
         generated_tokens: list[torch.Tensor] = []
 
         while len(generated_tokens) < min_gen_tokens:
@@ -54,21 +52,23 @@ class TextGenerator:
                     draft_prompt_tokens, self.lookahead + 1, context_length, self.target_model, temperature
                 ).squeeze(0)
                 
+                all_accept = True
                 # Compare the target model's next token with the draft model's lookahead
                 for t in range(self.lookahead):
                     draft_next_token_id, draft_next_token_logits = lookahead_tuples[t][1], lookahead_tuples[t][2]
-                    target_next_token_logits = target_model_probs[t, :]
+                    target_next_token_probs = target_model_probs[t, :]
                     
                     r = np.random.rand()
-                    if r < min(1.0, (target_next_token_logits[draft_next_token_id] / draft_next_token_logits[draft_next_token_id]).cpu().item()):
+                    if r < min(1.0, (target_next_token_probs[draft_next_token_id] / draft_next_token_logits[draft_next_token_id]).cpu().item()):
                         print("Accept!")
                         next_generated_token = draft_next_token_id
                         generated_tokens.append(next_generated_token)
                         # Update prompt tokens
                         prompt_tokens = torch.cat((prompt_tokens, next_generated_token.unsqueeze(0)), dim=1)
                     else:
+                        all_accept = False
                         print("Reject!")
-                        prob_diff = target_next_token_logits - draft_next_token_logits
+                        prob_diff = target_next_token_probs - draft_next_token_logits
                         # element-wise max to 0
                         prob_diff = torch.clamp(prob_diff, min=0)
                         prob_diff = prob_diff / torch.sum(prob_diff)
@@ -77,6 +77,12 @@ class TextGenerator:
                         # Update prompt tokens
                         prompt_tokens = torch.cat((prompt_tokens, next_generated_token.unsqueeze(0)), dim=1)
                         break
+                if all_accept:
+                    print("All accept!")
+                    next_generated_token = torch.multinomial(target_model_probs[-1], num_samples=1)
+                    generated_tokens.append(next_generated_token)
+                    # Update prompt tokens
+                    prompt_tokens = torch.cat((prompt_tokens, next_generated_token.unsqueeze(0)), dim=1)
 
         generate_text = self.tokenizer.decode(prompt_tokens.squeeze(0).tolist())
         return generate_text
@@ -149,6 +155,7 @@ if __name__ == '__main__':
     generate_text = text_generator.generate(
         prompt_text=prompt_text,
         min_gen_tokens=40,
+        temperature=0,
     )
     print(generate_text)
     end_time = time.time()
