@@ -130,6 +130,7 @@ class TextGenerator:
 
 if __name__ == "__main__":
     import time
+
     gpt = GPTModel("355M").load("../../models/gpt_355m.pt")
     text_generator = TextGenerator(gpt_model=gpt)
 
@@ -142,4 +143,3 @@ if __name__ == "__main__":
     print(generate_text)
     end_time = time.time()
     print("Time elapsed: {:.2f}s".format(end_time - start_time))
-
