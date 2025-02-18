@@ -16,7 +16,7 @@ def __():
 def __():
     import torch
 
-    from toyllm import GPTModel, TextGenerator, gpt2_tokenizer
+    from toyllm.gpt2 import GPTModel, TextGenerator, gpt2_tokenizer
 
     gpt = GPTModel("124M").load("../models/gpt_124m.pt")
     text_generator = TextGenerator(gpt_model=gpt)
@@ -129,7 +129,7 @@ def __(mo):
 @app.cell
 def __(mo, prompt_tokens_tensor, text_generator, torch):
     with torch.inference_mode():
-        logits = text_generator.gpt_model(prompt_tokens_tensor)
+        logits = text_generator.gpt_model(prompt_tokens_tensor.to(text_generator.gpt_model.device))
 
     mo.md(
         f"Feed `prompt_tokens_tensor` into the GPT2 Neural Network, we get the **logits**, a tensor with shape **{logits.shape}**"
@@ -182,7 +182,7 @@ def __(mo):
 @app.cell
 def __(mo):
     mo.md(
-        "Add the first token in response, we got a new prompt, feed it into the llm, we got a new next token, ..., finally we will got the full response as shown in beginning!"
+        """Add the first token in response, we got a new prompt, feed it into the llm, we got a new next token, ..., finally we will got the full response as shown in beginning!"""
     )
     return
 
@@ -192,11 +192,6 @@ def __(mo):
     mo.md(
         """Powered by [ToyLLM](https://github.com/ai-glimpse/toyllm) | Author: [MathewShen](https://github.com/shenxiangzhuang)."""
     ).center()
-    return
-
-
-@app.cell
-def __():
     return
 
 
