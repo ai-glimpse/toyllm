@@ -91,3 +91,7 @@ ignore = ["F722"]
 
 [tool.black]
 line-length = 120
+
+[tool.mypy]
+# exclude all files in plaground
+exclude = ["playground/*"]
