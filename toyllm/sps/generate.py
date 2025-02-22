@@ -47,7 +47,7 @@ class SpsTextGenerator:
                         temperature,
                     )
                     draft_next_token_id, draft_next_token_logits = draft_next_token_ids[0], draft_next_token_logits[0]
-                    lookahead_tuples.append((draft_prompt_tokens.clone(), draft_next_token_id, draft_next_token_logits))
+                    lookahead_tuples.append((draft_next_token_id, draft_next_token_logits))
                     # Append sampled index to the running sequence
                     # (batch, n_tokens') --(append next token)--> (batch, n_tokens' + 1)
                     draft_prompt_tokens = torch.cat((draft_prompt_tokens, draft_next_token_ids), dim=1)
@@ -60,7 +60,7 @@ class SpsTextGenerator:
                 all_accept = True
                 # Compare the target model's next token with the draft model's lookahead
                 for t in range(self.lookahead):
-                    draft_next_token_id, draft_next_token_logits = lookahead_tuples[t][1], lookahead_tuples[t][2]
+                    draft_next_token_id, draft_next_token_logits = lookahead_tuples[t][0], lookahead_tuples[t][1]
                     target_next_token_probs = target_model_probs[t, :]
 
                     r = np.random.rand()
