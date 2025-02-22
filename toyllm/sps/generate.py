@@ -40,33 +40,32 @@ class SpsTextGenerator:
                 lookahead_tuples = []
                 draft_prompt_tokens = prompt_tokens.clone()
                 for _ in range(self.lookahead):
-                    draft_next_token_ids, draft_next_token_logits = self._get_next_token_id_and_probs(
+                    draft_next_token_id, draft_next_token_probs = self._get_draft_next_token_id_and_probs(
                         draft_prompt_tokens,
                         context_length,
                         self.draft_model,
                         temperature,
                     )
-                    draft_next_token_id, draft_next_token_logits = draft_next_token_ids[0], draft_next_token_logits[0]
-                    lookahead_tuples.append((draft_next_token_id, draft_next_token_logits))
+                    lookahead_tuples.append((draft_next_token_id, draft_next_token_probs))
                     # Append sampled index to the running sequence
                     # (batch, n_tokens') --(append next token)--> (batch, n_tokens' + 1)
-                    draft_prompt_tokens = torch.cat((draft_prompt_tokens, draft_next_token_ids), dim=1)
+                    draft_prompt_tokens = torch.cat((draft_prompt_tokens, draft_next_token_id.unsqueeze(0)), dim=1)
 
                 # Target model logits
-                target_model_probs = self._get_latest_n_token_probs(
+                target_model_probs = self._get_target_latest_n_token_probs(
                     draft_prompt_tokens, self.lookahead + 1, context_length, self.target_model, temperature
                 ).squeeze(0)
 
                 all_accept = True
                 # Compare the target model's next token with the draft model's lookahead
                 for t in range(self.lookahead):
-                    draft_next_token_id, draft_next_token_logits = lookahead_tuples[t][0], lookahead_tuples[t][1]
+                    draft_next_token_id, draft_next_token_probs = lookahead_tuples[t][0], lookahead_tuples[t][1]
                     target_next_token_probs = target_model_probs[t, :]
 
                     r = np.random.rand()
                     if r < min(
                         1.0,
-                        (target_next_token_probs[draft_next_token_id] / draft_next_token_logits[draft_next_token_id])
+                        (target_next_token_probs[draft_next_token_id] / draft_next_token_probs[draft_next_token_id])
                         .cpu()
                         .item(),
                     ):
@@ -78,7 +77,7 @@ class SpsTextGenerator:
                     else:
                         all_accept = False
                         # print("Reject!")
-                        prob_diff = target_next_token_probs - draft_next_token_logits
+                        prob_diff = target_next_token_probs - draft_next_token_probs
                         # element-wise max to 0
                         prob_diff = torch.clamp(prob_diff, min=0)
                         prob_diff = prob_diff / torch.sum(prob_diff)
@@ -98,7 +97,7 @@ class SpsTextGenerator:
         return generate_text
 
     @staticmethod
-    def _get_next_token_id_and_probs(
+    def _get_draft_next_token_id_and_probs(
         prompt_tokens: torch.Tensor,
         context_length: int,
         model: BaseSpsModel,
@@ -118,11 +117,12 @@ class SpsTextGenerator:
         else:
             next_token_id = torch.argmax(logits, dim=-1, keepdim=True)
             probs = torch.softmax(logits, dim=-1)
-
-        return next_token_id, probs
+        # The batch dimension is 1(in this example), so we select the first element
+        assert next_token_id.shape[0] == 1 and probs.shape[0] == 1
+        return next_token_id[0], probs[0]
 
     @staticmethod
-    def _get_latest_n_token_probs(
+    def _get_target_latest_n_token_probs(
         prompt_tokens: torch.Tensor,
         n: int,
         context_length: int,
@@ -150,7 +150,8 @@ if __name__ == "__main__":
     from toyllm.sps.models import GPTSpsModel
 
     prompt_text = "Alan Turing theorized that computers would one day become"
-    generate_tokens = 256
+    # generate_tokens = 256
+    generate_tokens = 40
 
     # Test the speculative sampling
     sps_text_generator = SpsTextGenerator(
