@@ -150,8 +150,7 @@ if __name__ == "__main__":
     from toyllm.sps.models import GPTSpsModel
 
     prompt_text = "Alan Turing theorized that computers would one day become"
-    # generate_tokens = 256
-    generate_tokens = 40
+    generate_tokens = 256
 
     # Test the speculative sampling
     sps_text_generator = SpsTextGenerator(
