@@ -129,14 +129,17 @@ class TextGenerator:
 
 
 if __name__ == "__main__":
-    gpt = GPTModel("124M").load("../../models/gpt_124m.pt")
+    import time
+
+    gpt = GPTModel("1558M").load("../../models/gpt_1558m.pt")
     text_generator = TextGenerator(gpt_model=gpt)
 
+    start_time = time.time()
     prompt_text = "Alan Turing theorized that computers would one day become"
     generate_text = text_generator.generate(
         prompt_text=prompt_text,
-        max_gen_tokens=40,
-        top_k=10,
-        temperature=0,
+        max_gen_tokens=256,
     )
     print(generate_text)
+    end_time = time.time()
+    print("Time elapsed: {:.2f}s".format(end_time - start_time))
