@@ -144,23 +144,26 @@ class SpsTextGenerator:
 if __name__ == "__main__":
     import time
 
+    from toyllm.gpt2.generate import TextGenerator as GptTextGenerator
+    from toyllm.gpt2.gpt import GPTModel
     from toyllm.gpt2.tokenizer import get_gpt2_tokenizer
-    from toyllm.sps.models import DraftModelGPT2, TargetModelGPT2
+    from toyllm.sps.models import GPTSpsModel
 
     prompt_text = "Alan Turing theorized that computers would one day become"
+    generate_tokens = 256
 
     # Test the speculative sampling
     sps_text_generator = SpsTextGenerator(
         tokenizer=get_gpt2_tokenizer(),
-        target_model=TargetModelGPT2(),
-        draft_model=DraftModelGPT2(),
+        target_model=GPTSpsModel(model_name="1558M"),
+        draft_model=GPTSpsModel(model_name="124M"),
         lookahead=4,
     )
 
     start_time = time.time()
     generate_text = sps_text_generator.generate(
         prompt_text=prompt_text,
-        min_gen_tokens=256,
+        min_gen_tokens=generate_tokens,
         temperature=0,
     )
     end_time = time.time()
@@ -171,16 +174,13 @@ if __name__ == "__main__":
     )
 
     # Test the GPT2 model
-    from toyllm.gpt2.generate import TextGenerator as GptTextGenerator
-    from toyllm.gpt2.gpt import GPTModel
-
     gpt = GPTModel("1558M").load("../../models/gpt_1558m.pt")
     gpt_text_generator = GptTextGenerator(gpt_model=gpt)
 
     start_time = time.time()
     generate_text = gpt_text_generator.generate(
         prompt_text=prompt_text,
-        max_gen_tokens=256,
+        max_gen_tokens=generate_tokens,
     )
     end_time = time.time()
     print(
