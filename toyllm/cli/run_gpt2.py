@@ -3,9 +3,7 @@ import time
 
 import typer
 
-from toyllm.gpt2.config import GPTModelSize
-from toyllm.gpt2.generate import TextGenerator
-from toyllm.gpt2.gpt import GPTModel
+from toyllm.gpt2 import GPTModel, GPTModelSize, TextGenerator
 
 
 def main(
