@@ -16,7 +16,7 @@ class SpsTextGenerator:
     seed: int = 42
 
     def __post_init__(self):
-        np.random.seed(self.seed)
+        self.rng = np.random.default_rng(self.seed)
 
     def generate(
         self,
@@ -61,7 +61,7 @@ class SpsTextGenerator:
                     draft_next_token_id, draft_next_token_probs = lookahead_tuples[t][0], lookahead_tuples[t][1]
                     target_next_token_probs = target_model_probs[t, :]
 
-                    r = np.random.rand()
+                    r = self.rng.random()
                     if r < min(
                         1.0,
                         (target_next_token_probs[draft_next_token_id] / draft_next_token_probs[draft_next_token_id])
