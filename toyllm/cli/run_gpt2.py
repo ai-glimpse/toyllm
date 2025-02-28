@@ -1,22 +1,24 @@
 import pathlib
 import time
-from typing import Literal
 
+import typer
+
+from toyllm.gpt2.config import GPTModelSize
 from toyllm.gpt2.generate import TextGenerator
 from toyllm.gpt2.gpt import GPTModel
 
 
-def run(
-    prompt_text: str,
-    model_name: Literal["124M", "355M", "774M", "1558M"] = "124M",
+def main(
+    prompt: str = "Alan Turing theorized that computers would one day become",
+    model_size: GPTModelSize = GPTModelSize.SMALL,
     max_gen_tokens: int = 40,
 ):
-    gpt_model = GPTModel(model_name).load(f"{pathlib.Path(__file__).parent}/../../models/gpt_{model_name.lower()}.pt")
+    gpt_model = GPTModel(model_size).load(f"{pathlib.Path(__file__).parent}/../../models/gpt_{model_size.lower()}.pt")
     text_generator = TextGenerator(gpt_model=gpt_model)
 
     start_time = time.time()
     generate_text = text_generator.generate(
-        prompt_text=prompt_text,
+        prompt_text=prompt,
         max_gen_tokens=max_gen_tokens,
     )
     print(generate_text)
@@ -25,4 +27,4 @@ def run(
 
 
 if __name__ == "__main__":
-    run("Alan Turing theorized that computers would one day become")
+    typer.run(main)
