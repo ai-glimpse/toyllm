@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 import numpy as np
 import tiktoken
@@ -23,7 +22,7 @@ class SpsTextGenerator:
         self,
         prompt_text: str,
         min_gen_tokens: int = 100,
-        temperature: Optional[float] = None,
+        temperature: None | float = None,
     ) -> str:
         context_length = self.target_model.get_context_length()
 
@@ -101,7 +100,7 @@ class SpsTextGenerator:
         prompt_tokens: torch.Tensor,
         context_length: int,
         model: BaseSpsModel,
-        temperature: Optional[float] = None,
+        temperature: None | float = None,
         eps: float = 1e-8,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         # Crop current context if it exceeds the supported context size(ctx_len)
@@ -127,7 +126,7 @@ class SpsTextGenerator:
         n: int,
         context_length: int,
         model: BaseSpsModel,
-        temperature: Optional[float] = None,
+        temperature: None | float = None,
         eps: float = 1e-8,
     ) -> torch.Tensor:
         # (batch, n_tokens) --(crop context)--> (batch, n_tokens' = min(ctx_len, n_tokens))
