@@ -19,10 +19,9 @@
   - 在`toyllm`的根目录下执行`git clone https://huggingface.co/MathewShen/toyllm-gpt2 models`
   - 或者直接从[https://huggingface.co/MathewShen/toyllm-gpt2/tree/main](https://huggingface.co/MathewShen/toyllm-gpt2/tree/main)下载模型文件，并放到`toyllm/models`目录下
 
-### 使用
+### 运行示例
 
-
-- GPT2 运行：`python toyllm/cli/run_gpt2.py`
+- GPT2：`python toyllm/cli/run_gpt2.py`
   - `python toyllm/cli/run_gpt2.py --help` 查看参数信息
 
 - Speculative Sampling GPT2: `toyllm/cli/run_speculative_sampling.py`
