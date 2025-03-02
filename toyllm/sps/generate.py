@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 import numpy as np
 import tiktoken
@@ -17,24 +16,20 @@ class SpsTextGenerator:
     seed: int = 42
 
     def __post_init__(self):
-        np.random.seed(self.seed)
+        self.rng = np.random.default_rng(self.seed)
 
     def generate(
         self,
-        prompt_text: str,
+        prompt: str,
         min_gen_tokens: int = 100,
-        temperature: Optional[float] = None,
+        temperature: None | float = None,
     ) -> str:
-        context_length = self.target_model.get_context_length()
-
         # prompt text to tokens: (1, n_tokens)
-        text_id_list = self.tokenizer.encode(prompt_text)
+        text_id_list = self.tokenizer.encode(prompt)
         prompt_tokens = torch.tensor(text_id_list).unsqueeze(0).to(self.target_model.device())  # add batch dimension
         generated_tokens: list[torch.Tensor] = []
 
         while len(generated_tokens) <= min_gen_tokens:
-            # Get the predictions
-            # use `inference_mode` rather than `no_grad`(https://stackoverflow.com/questions/74191070)
             with torch.inference_mode():
                 # Draft model lookahead: (prompt_tokens, next_token_id, next_token_logits)
                 lookahead_tuples = []
@@ -42,7 +37,6 @@ class SpsTextGenerator:
                 for _ in range(self.lookahead):
                     draft_next_token_id, draft_next_token_probs = self._get_draft_next_token_id_and_probs(
                         draft_prompt_tokens,
-                        context_length,
                         self.draft_model,
                         temperature,
                     )
@@ -53,7 +47,7 @@ class SpsTextGenerator:
 
                 # Target model logits
                 target_model_probs = self._get_target_latest_n_token_probs(
-                    draft_prompt_tokens, self.lookahead + 1, context_length, self.target_model, temperature
+                    draft_prompt_tokens, self.lookahead + 1, self.target_model, temperature
                 ).squeeze(0)
 
                 all_accept = True
@@ -62,7 +56,7 @@ class SpsTextGenerator:
                     draft_next_token_id, draft_next_token_probs = lookahead_tuples[t][0], lookahead_tuples[t][1]
                     target_next_token_probs = target_model_probs[t, :]
 
-                    r = np.random.rand()
+                    r = self.rng.random()
                     if r < min(
                         1.0,
                         (target_next_token_probs[draft_next_token_id] / draft_next_token_probs[draft_next_token_id])
@@ -96,16 +90,16 @@ class SpsTextGenerator:
         generate_text = self.tokenizer.decode(prompt_tokens.squeeze(0).tolist())
         return generate_text
 
-    @staticmethod
     def _get_draft_next_token_id_and_probs(
+        self,
         prompt_tokens: torch.Tensor,
-        context_length: int,
         model: BaseSpsModel,
-        temperature: Optional[float] = None,
+        temperature: None | float = None,
         eps: float = 1e-8,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         # Crop current context if it exceeds the supported context size(ctx_len)
         # (batch, n_tokens) --(crop context)--> (batch, n_tokens' = min(ctx_len, n_tokens))
+        context_length = self.target_model.get_context_length()
         context_text_token_ids = prompt_tokens[:, -context_length:]
         logits = model.get_next_token_logits(prompt_token=context_text_token_ids)
         logits = logits[:, -1, :]
@@ -121,15 +115,16 @@ class SpsTextGenerator:
         assert next_token_id.shape[0] == 1 and probs.shape[0] == 1
         return next_token_id[0], probs[0]
 
-    @staticmethod
     def _get_target_latest_n_token_probs(
+        self,
         prompt_tokens: torch.Tensor,
         n: int,
-        context_length: int,
         model: BaseSpsModel,
-        temperature: Optional[float] = None,
+        temperature: None | float = None,
         eps: float = 1e-8,
     ) -> torch.Tensor:
+        context_length = self.target_model.get_context_length()
+
         # (batch, n_tokens) --(crop context)--> (batch, n_tokens' = min(ctx_len, n_tokens))
         context_text_token_ids = prompt_tokens[:, -context_length:]
         logits = model.get_next_token_logits(prompt_token=context_text_token_ids)
@@ -139,52 +134,3 @@ class SpsTextGenerator:
             logits = logits / (temperature + eps)
         probs = torch.softmax(logits, dim=-1)
         return probs
-
-
-if __name__ == "__main__":
-    import time
-
-    from toyllm.gpt2.generate import TextGenerator as GptTextGenerator
-    from toyllm.gpt2.gpt import GPTModel
-    from toyllm.gpt2.tokenizer import get_gpt2_tokenizer
-    from toyllm.sps.models import GPTSpsModel
-
-    prompt_text = "Alan Turing theorized that computers would one day become"
-    generate_tokens = 256
-
-    # Test the speculative sampling
-    sps_text_generator = SpsTextGenerator(
-        tokenizer=get_gpt2_tokenizer(),
-        target_model=GPTSpsModel(model_name="1558M"),
-        draft_model=GPTSpsModel(model_name="124M"),
-        lookahead=4,
-    )
-
-    start_time = time.time()
-    generate_text = sps_text_generator.generate(
-        prompt_text=prompt_text,
-        min_gen_tokens=generate_tokens,
-        temperature=0,
-    )
-    end_time = time.time()
-    print(
-        f"[Speculative Sampling]: Time elapsed: {end_time - start_time:.2f}s\n"
-        f"Prompt: {prompt_text}\n"
-        f"Generated: {generate_text[:200]}"
-    )
-
-    # Test the GPT2 model
-    gpt = GPTModel("1558M").load("../../models/gpt_1558m.pt")
-    gpt_text_generator = GptTextGenerator(gpt_model=gpt)
-
-    start_time = time.time()
-    generate_text = gpt_text_generator.generate(
-        prompt_text=prompt_text,
-        max_gen_tokens=generate_tokens,
-    )
-    end_time = time.time()
-    print(
-        f"[Naive GPT2 Auto-Regressive]: Time elapsed: {end_time - start_time:.2f}s\n"
-        f"Prompt: {prompt_text}\n"
-        f"Generated: {generate_text[:200]}"
-    )

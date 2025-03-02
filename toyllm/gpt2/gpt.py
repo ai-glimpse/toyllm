@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
+import logging
+import pathlib
 from typing import TypeAlias
 
 import jaxtyping
@@ -11,13 +13,13 @@ import torch.nn as nn
 from typeguard import typechecked as typechecker
 
 from toyllm.gpt2.config import (
-    GPT_124M_MODEL_CONFIG,
-    GPT_355M_MODEL_CONFIG,
-    GPT_774M_MODEL_CONFIG,
-    GPT_1558M_MODEL_CONFIG,
     GPTModelConfig,
     GPTModelSize,
+    get_model_config,
 )
+
+logger = logging.getLogger(__name__)
+
 
 GPTInputType: TypeAlias = jaxtyping.Int[torch.Tensor, "batch_size num_tokens"]
 GPTInnerType: TypeAlias = jaxtyping.Float[torch.Tensor, "batch_size num_tokens emb_dim"]
@@ -79,7 +81,6 @@ class MultiHeadAttention(nn.Module):
         attn_scores.masked_fill_(mask_bool, -torch.inf)
 
         attn_weights = torch.softmax(attn_scores / keys.shape[-1] ** 0.5, dim=-1)
-        # TODO: explain why dropout here
         attn_weights = self.dropout(attn_weights)
 
         # Shape: (b, num_tokens, num_heads, head_dim)
@@ -167,14 +168,14 @@ class TransformerBlock(nn.Module):
 
 
 class GPTModel(nn.Module):
-    def __init__(self, model_size: str | GPTModelSize):
+    def __init__(self, model_size: GPTModelSize):
         """
         Args:
             model_size: Options: SMALL(124M), MEDIUM(355M), LARGE(774M), XLARGE(1558M)
         """
         super().__init__()
         self.model_size = model_size
-        self.config = self.get_model_config(self.model_size)
+        self.config = get_model_config(self.model_size)
         self.tok_emb = nn.Embedding(self.config.vocab_size, self.config.emb_dim)
         self.pos_emb = nn.Embedding(self.config.ctx_len, self.config.emb_dim)
         self.drop_emb = nn.Dropout(self.config.drop_rate)
@@ -183,18 +184,6 @@ class GPTModel(nn.Module):
 
         self.final_norm = LayerNorm(self.config.emb_dim)
         self.out_head = nn.Linear(self.config.emb_dim, self.config.vocab_size, bias=False)
-
-    def get_model_config(self, model_size: str | GPTModelSize) -> GPTModelConfig:
-        if model_size == GPTModelSize.SMALL:
-            return GPT_124M_MODEL_CONFIG
-        elif model_size == GPTModelSize.MEDIUM:
-            return GPT_355M_MODEL_CONFIG
-        elif model_size == GPTModelSize.LARGE:
-            return GPT_774M_MODEL_CONFIG
-        elif model_size == GPTModelSize.XLARGE:
-            return GPT_1558M_MODEL_CONFIG
-        else:
-            raise ValueError(f"Invalid model size: {model_size}")
 
     @jaxtyping.jaxtyped(typechecker=typechecker)
     def forward(self, input_vocab_indexes: GPTInputType) -> GPTOutputType:
@@ -219,6 +208,11 @@ class GPTModel(nn.Module):
     def save(self) -> None:
         torch.save(self.state_dict(), f"{self.config.name}.pt")
 
-    def load(self, model_path: str) -> "GPTModel":
+    def load(self, model_path: str = "") -> "GPTModel":
+        if model_path == "":
+            model_path = f"{pathlib.Path(__file__).parents[2]}/models/{self.config.name}.pt"
+        logger.debug(f"Loading model from {model_path}")
+        if not pathlib.Path(model_path).exists():
+            raise FileNotFoundError(f"Model file not found: {model_path}")
         self.load_state_dict(torch.load(model_path, weights_only=True, map_location=self.device))
         return self

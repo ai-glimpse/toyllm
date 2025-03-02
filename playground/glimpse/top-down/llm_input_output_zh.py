@@ -16,13 +16,13 @@ def __():
 def __():
     import torch
 
-    from toyllm.gpt2 import GPTModel, TextGenerator, gpt2_tokenizer
+    from toyllm.gpt2 import GPTModel, GPTTextGenerator, gpt2_tokenizer
 
     gpt = GPTModel("124M").load("../../../models/gpt_124m.pt")
-    text_generator = TextGenerator(gpt_model=gpt)
+    text_generator = GPTTextGenerator(gpt_model=gpt)
     return (
         GPTModel,
-        TextGenerator,
+        GPTTextGenerator,
         gpt,
         gpt2_tokenizer,
         text_generator,
@@ -47,7 +47,7 @@ def __(mo):
 @app.cell
 def __(mo, prompt_text, text_generator):
     generate_text = text_generator.generate(
-        prompt_text=prompt_text,
+        prompt=prompt_text,
         max_gen_tokens=40,
         top_k=10,
     )
@@ -102,8 +102,8 @@ def __(gpt2_tokenizer, mo, prompt_tokens):
     subwords = [gpt2_tokenizer.decode([token]) for token in prompt_tokens]
 
     mo.md(
-        f"""从Tokens我们可以反向获取到 Prompt 的subwords（由 BPE 生成）：**{subwords}**
-        \n注意 **theorized** 被拆分为 **theor** 和 **ized**。所以我们在 Prompt 中得到了 10 个subwords和 9 个单词。
+        f"""从 Tokens 我们可以反向获取到 Prompt 的 subwords（由 BPE 生成）：**{subwords}**
+        \n注意 **theorized** 被拆分为 **theor** 和 **ized**。所以我们在 Prompt 中得到了 10 个 subwords 和 9 个单词。
         (还要注意一些子词前的空格）"""
     )
     return (subwords,)
@@ -142,7 +142,7 @@ def __(logits, mo):
     logits_last = logits[:, -1, :]
 
     mo.md(
-        f"""仅选择最后的 logits（shape为 **{logits_last.shape}**），这是词表（包含 50,527 个Token）上下一个标记的 logits（可以视为未归一化的概率）"""
+        f"""仅选择最后的 logits（shape 为 **{logits_last.shape}**），这是词表（包含 50,527 个 Token）上下一个标记的 logits（可以视为未归一化的概率）"""
     )
     return (logits_last,)
 
@@ -159,7 +159,7 @@ def __(logits_last, mo, text_generator, torch):
     next_token_id = torch.argmax(logits_last_with_top_k, dim=-1, keepdim=True)
 
     mo.md(
-        f"""对最后的 logit 应用 topK 采样和Temperature缩放，我们得到了下一个标记 id：
+        f"""对最后的 logit 应用 topK 采样和 Temperature 缩放，我们得到了下一个标记 id：
     **{next_token_id}**"""
     )
     return logits_last_with_top_k, next_token_id

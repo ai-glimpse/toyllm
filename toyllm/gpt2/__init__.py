@@ -1,6 +1,7 @@
 from toyllm.gpt2.tokenizer import gpt2_tokenizer
 
-from .generate import TextGenerator
+from .config import GPTModelSize
+from .generate import GPTTextGenerator
 from .gpt import GPTModel
 
-__all__ = ["GPTModel", "TextGenerator", "gpt2_tokenizer"]
+__all__ = ["GPTModel", "GPTTextGenerator", "GPTModelSize", "gpt2_tokenizer"]

@@ -16,10 +16,11 @@ def get_dataset_dir() -> pathlib.Path:
 class GPTDataset(Dataset):
     def __init__(self, txt: str, tokenizer: tiktoken.Encoding, max_length: int, stride: int):
         """
-        :param txt: txt data
-        :param tokenizer: tokenizer object
-        :param max_length: max length
-        :param stride: stride size
+        Args:
+            txt: txt data
+            tokenizer: tokenizer object
+            max_length: max length
+            stride: stride size
         """
         self.tokenizer = tokenizer
         self.input_ids = []

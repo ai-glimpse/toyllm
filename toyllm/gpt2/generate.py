@@ -13,7 +13,7 @@ from toyllm.gpt2.tokenizer import gpt2_tokenizer, text_to_token_ids, token_ids_t
 logger = logging.getLogger(__name__)
 
 
-class TextGenerator:
+class GPTTextGenerator:
     def __init__(
         self,
         gpt_model: GPTModel,
@@ -38,27 +38,24 @@ class TextGenerator:
 
     def generate(
         self,
-        prompt_text: str,
+        prompt: str,
         max_gen_tokens: int = 10,
         top_k: Optional[int] = None,
         temperature: Optional[float] = None,
     ) -> str:
         """
-
-        :param prompt_text: prompt text
-        :param max_gen_tokens: maximum number of tokens to generate
-        :param top_k: only keep `top_k`(logits) candidate tokens to select from.
-        A little `top_k` will reduce the randomness of generated output.
-        `top_k` must be greater than 0, like 5, 10 and so on.
-        :param temperature: "Temperatures greater than 1 will result in more uniformly distributed token probabilities
-        after applying the softmax; temperatures smaller than 1 will result in
-        more confident (sharper or more peaky) distributions after applying the softmax"
-        (https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/01_main-chapter-code/ch05.ipynb)
-        The default temperature value is 0.6 in llama2.
-
+        Args:
+            prompt: prompt text
+            max_gen_tokens: maximum number of tokens to generate
+            top_k: only keep `top_k`(logits) candidate tokens to select from. A little `top_k` will reduce the randomness of generated output.`top_k` must be greater than 0, like 5, 10 and so on.
+            temperature: "Temperatures greater than 1 will result in more uniformly distributed token probabilities
+            after applying the softmax; temperatures smaller than 1 will result in
+            more confident (sharper or more peaky) distributions after applying the softmax"
+            (https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/01_main-chapter-code/ch05.ipynb)
+            The default temperature value is 0.6 in llama2.
         """
         # prompt text to tokens: (1, n_tokens)
-        prompt_tokens = text_to_token_ids(prompt_text, self.tokenizer).to(self.gpt_model.device)
+        prompt_tokens = text_to_token_ids(prompt, self.tokenizer).to(self.gpt_model.device)
 
         for _ in range(max_gen_tokens):
             # Crop current context if it exceeds the supported context size(ctx_len)
@@ -126,20 +123,3 @@ class TextGenerator:
         logits = logits / (temperature + eps)
         probs = torch.softmax(logits, dim=-1)
         return probs
-
-
-if __name__ == "__main__":
-    import time
-
-    gpt = GPTModel("1558M").load("../../models/gpt_1558m.pt")
-    text_generator = TextGenerator(gpt_model=gpt)
-
-    start_time = time.time()
-    prompt_text = "Alan Turing theorized that computers would one day become"
-    generate_text = text_generator.generate(
-        prompt_text=prompt_text,
-        max_gen_tokens=256,
-    )
-    print(generate_text)
-    end_time = time.time()
-    print("Time elapsed: {:.2f}s".format(end_time - start_time))
