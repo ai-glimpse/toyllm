@@ -24,8 +24,8 @@
 - GPT2：`python toyllm/cli/run_gpt2.py`
   - `python toyllm/cli/run_gpt2.py --help` 查看参数信息
 
-- Speculative Sampling GPT2: `toyllm/cli/run_speculative_sampling.py`
-  - `toyllm/cli/run_speculative_sampling.py --help` 查看参数信息
+- Speculative Sampling GPT2: `python toyllm/cli/run_speculative_sampling.py`
+  - `python toyllm/cli/run_speculative_sampling.py --help` 查看参数信息
 
 ## Acknowledgements
 
