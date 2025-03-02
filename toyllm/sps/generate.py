@@ -20,20 +20,16 @@ class SpsTextGenerator:
 
     def generate(
         self,
-        prompt_text: str,
+        prompt: str,
         min_gen_tokens: int = 100,
         temperature: None | float = None,
     ) -> str:
-        context_length = self.target_model.get_context_length()
-
         # prompt text to tokens: (1, n_tokens)
-        text_id_list = self.tokenizer.encode(prompt_text)
+        text_id_list = self.tokenizer.encode(prompt)
         prompt_tokens = torch.tensor(text_id_list).unsqueeze(0).to(self.target_model.device())  # add batch dimension
         generated_tokens: list[torch.Tensor] = []
 
         while len(generated_tokens) <= min_gen_tokens:
-            # Get the predictions
-            # use `inference_mode` rather than `no_grad`(https://stackoverflow.com/questions/74191070)
             with torch.inference_mode():
                 # Draft model lookahead: (prompt_tokens, next_token_id, next_token_logits)
                 lookahead_tuples = []
@@ -41,7 +37,6 @@ class SpsTextGenerator:
                 for _ in range(self.lookahead):
                     draft_next_token_id, draft_next_token_probs = self._get_draft_next_token_id_and_probs(
                         draft_prompt_tokens,
-                        context_length,
                         self.draft_model,
                         temperature,
                     )
@@ -52,7 +47,7 @@ class SpsTextGenerator:
 
                 # Target model logits
                 target_model_probs = self._get_target_latest_n_token_probs(
-                    draft_prompt_tokens, self.lookahead + 1, context_length, self.target_model, temperature
+                    draft_prompt_tokens, self.lookahead + 1, self.target_model, temperature
                 ).squeeze(0)
 
                 all_accept = True
@@ -95,16 +90,16 @@ class SpsTextGenerator:
         generate_text = self.tokenizer.decode(prompt_tokens.squeeze(0).tolist())
         return generate_text
 
-    @staticmethod
     def _get_draft_next_token_id_and_probs(
+        self,
         prompt_tokens: torch.Tensor,
-        context_length: int,
         model: BaseSpsModel,
         temperature: None | float = None,
         eps: float = 1e-8,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         # Crop current context if it exceeds the supported context size(ctx_len)
         # (batch, n_tokens) --(crop context)--> (batch, n_tokens' = min(ctx_len, n_tokens))
+        context_length = self.target_model.get_context_length()
         context_text_token_ids = prompt_tokens[:, -context_length:]
         logits = model.get_next_token_logits(prompt_token=context_text_token_ids)
         logits = logits[:, -1, :]
@@ -120,15 +115,16 @@ class SpsTextGenerator:
         assert next_token_id.shape[0] == 1 and probs.shape[0] == 1
         return next_token_id[0], probs[0]
 
-    @staticmethod
     def _get_target_latest_n_token_probs(
+        self,
         prompt_tokens: torch.Tensor,
         n: int,
-        context_length: int,
         model: BaseSpsModel,
         temperature: None | float = None,
         eps: float = 1e-8,
     ) -> torch.Tensor:
+        context_length = self.target_model.get_context_length()
+
         # (batch, n_tokens) --(crop context)--> (batch, n_tokens' = min(ctx_len, n_tokens))
         context_text_token_ids = prompt_tokens[:, -context_length:]
         logits = model.get_next_token_logits(prompt_token=context_text_token_ids)

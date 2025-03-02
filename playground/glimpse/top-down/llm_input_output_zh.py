@@ -16,13 +16,13 @@ def __():
 def __():
     import torch
 
-    from toyllm.gpt2 import GPTModel, GptTextGenerator, gpt2_tokenizer
+    from toyllm.gpt2 import GPTModel, GPTTextGenerator, gpt2_tokenizer
 
     gpt = GPTModel("124M").load("../../../models/gpt_124m.pt")
-    text_generator = GptTextGenerator(gpt_model=gpt)
+    text_generator = GPTTextGenerator(gpt_model=gpt)
     return (
         GPTModel,
-        GptTextGenerator,
+        GPTTextGenerator,
         gpt,
         gpt2_tokenizer,
         text_generator,
@@ -47,7 +47,7 @@ def __(mo):
 @app.cell
 def __(mo, prompt_text, text_generator):
     generate_text = text_generator.generate(
-        prompt_text=prompt_text,
+        prompt=prompt_text,
         max_gen_tokens=40,
         top_k=10,
     )

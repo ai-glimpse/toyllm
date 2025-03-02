@@ -83,7 +83,7 @@ GPT_1558M_MODEL_CONFIG = GPTModelConfig(
 )
 
 
-def get_model_config(model_size: str | GPTModelSize) -> GPTModelConfig:
+def get_model_config(model_size: GPTModelSize) -> GPTModelConfig:
     if model_size == GPTModelSize.SMALL:
         return GPT_124M_MODEL_CONFIG
     elif model_size == GPTModelSize.MEDIUM:

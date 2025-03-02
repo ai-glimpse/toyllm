@@ -1,9 +1,8 @@
-import pathlib
 import time
 
 import typer
 
-from toyllm.gpt2 import GPTModel, GPTModelSize, GptTextGenerator
+from toyllm.gpt2 import GPTModel, GPTModelSize, GPTTextGenerator
 
 
 def main(
@@ -11,12 +10,12 @@ def main(
     model_size: GPTModelSize = GPTModelSize.SMALL,
     max_gen_tokens: int = 40,
 ):
-    gpt_model = GPTModel(model_size).load(f"{pathlib.Path(__file__).parent}/../../models/gpt_{model_size.lower()}.pt")
-    text_generator = GptTextGenerator(gpt_model=gpt_model)
+    gpt_model = GPTModel(model_size).load()
+    text_generator = GPTTextGenerator(gpt_model=gpt_model)
 
     start_time = time.time()
     generate_text = text_generator.generate(
-        prompt_text=prompt,
+        prompt=prompt,
         max_gen_tokens=max_gen_tokens,
     )
     print(generate_text)

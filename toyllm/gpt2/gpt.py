@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
+import pathlib
 from typing import TypeAlias
 
 import jaxtyping
@@ -163,7 +164,7 @@ class TransformerBlock(nn.Module):
 
 
 class GPTModel(nn.Module):
-    def __init__(self, model_size: str | GPTModelSize):
+    def __init__(self, model_size: GPTModelSize):
         """
         Args:
             model_size: Options: SMALL(124M), MEDIUM(355M), LARGE(774M), XLARGE(1558M)
@@ -203,6 +204,11 @@ class GPTModel(nn.Module):
     def save(self) -> None:
         torch.save(self.state_dict(), f"{self.config.name}.pt")
 
-    def load(self, model_path: str) -> "GPTModel":
+    def load(self, model_path: str = "") -> "GPTModel":
+        if model_path == "":
+            model_path = f"{pathlib.Path(__file__).parents[2]}/models/{self.config.name}.pt"
+        print(f"Loading model from {model_path}")
+        if not pathlib.Path(model_path).exists():
+            raise FileNotFoundError(f"Model file not found: {model_path}")
         self.load_state_dict(torch.load(model_path, weights_only=True, map_location=self.device))
         return self

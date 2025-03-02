@@ -13,7 +13,7 @@ from torch.utils.data import DataLoader
 from toyllm.device import current_device
 from toyllm.gpt2.config import GPTModelSize, GPTTrainingConfig
 from toyllm.gpt2.dataset import GPTDataloader
-from toyllm.gpt2.generate import GptTextGenerator
+from toyllm.gpt2.generate import GPTTextGenerator
 from toyllm.gpt2.gpt import GPTModel
 from toyllm.gpt2.tokenizer import get_gpt2_tokenizer
 
@@ -63,8 +63,8 @@ def evaluate_model(model, train_loader, val_loader, eval_iter):
 
 def generate_and_print_sample(model, tokenizer, start_context):
     model.eval()
-    text_generate = GptTextGenerator(gpt_model=model, tokenizer=tokenizer)
-    generate_text = text_generate.generate(prompt_text=start_context, max_gen_tokens=50, temperature=0.9, top_k=10)
+    text_generate = GPTTextGenerator(gpt_model=model, tokenizer=tokenizer)
+    generate_text = text_generate.generate(prompt=start_context, max_gen_tokens=50, temperature=0.9, top_k=10)
     print(generate_text.replace("\n", " "))  # Compact print format
     model.train()
 
@@ -122,7 +122,7 @@ def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses):
 
 def main(
     text: str,
-    gpt_size: str | GPTModelSize,
+    gpt_size: GPTModelSize,
     training_config: GPTTrainingConfig,
 ):
     torch.manual_seed(123)

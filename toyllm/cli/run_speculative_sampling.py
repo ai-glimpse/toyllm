@@ -2,7 +2,7 @@ import time
 
 import typer
 
-from toyllm.gpt2 import GPTModel, GptTextGenerator, gpt2_tokenizer
+from toyllm.gpt2 import GPTModel, GPTModelSize, GPTTextGenerator, gpt2_tokenizer
 from toyllm.sps import GPTSpsModel, SpsTextGenerator
 
 
@@ -14,14 +14,14 @@ def main(
     # Test the speculative sampling
     sps_text_generator = SpsTextGenerator(
         tokenizer=gpt2_tokenizer,
-        target_model=GPTSpsModel(model_name="1558M"),
-        draft_model=GPTSpsModel(model_name="124M"),
+        target_model=GPTSpsModel(model_size=GPTModelSize.XLARGE),
+        draft_model=GPTSpsModel(model_size=GPTModelSize.SMALL),
         lookahead=k,
     )
 
     start_time = time.time()
     generate_text = sps_text_generator.generate(
-        prompt_text=prompt_text,
+        prompt=prompt_text,
         min_gen_tokens=generate_tokens,
         temperature=0,
     )
@@ -33,12 +33,12 @@ def main(
     )
 
     # Test the GPT2 model
-    gpt = GPTModel("1558M").load("../../models/gpt_1558m.pt")
-    gpt_text_generator = GptTextGenerator(gpt_model=gpt)
+    gpt = GPTModel(GPTModelSize.XLARGE).load()
+    gpt_text_generator = GPTTextGenerator(gpt_model=gpt)
 
     start_time = time.time()
     generate_text = gpt_text_generator.generate(
-        prompt_text=prompt_text,
+        prompt=prompt_text,
         max_gen_tokens=generate_tokens,
     )
     end_time = time.time()
