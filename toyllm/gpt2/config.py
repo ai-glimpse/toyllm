@@ -83,6 +83,19 @@ GPT_1558M_MODEL_CONFIG = GPTModelConfig(
 )
 
 
+def get_model_config(model_size: str | GPTModelSize) -> GPTModelConfig:
+    if model_size == GPTModelSize.SMALL:
+        return GPT_124M_MODEL_CONFIG
+    elif model_size == GPTModelSize.MEDIUM:
+        return GPT_355M_MODEL_CONFIG
+    elif model_size == GPTModelSize.LARGE:
+        return GPT_774M_MODEL_CONFIG
+    elif model_size == GPTModelSize.XLARGE:
+        return GPT_1558M_MODEL_CONFIG
+    else:
+        raise ValueError(f"Invalid model size: {model_size}")
+
+
 @dataclass
 class GPTTrainingConfig:
     """

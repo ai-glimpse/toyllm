@@ -11,12 +11,9 @@ import torch.nn as nn
 from typeguard import typechecked as typechecker
 
 from toyllm.gpt2.config import (
-    GPT_124M_MODEL_CONFIG,
-    GPT_355M_MODEL_CONFIG,
-    GPT_774M_MODEL_CONFIG,
-    GPT_1558M_MODEL_CONFIG,
     GPTModelConfig,
     GPTModelSize,
+    get_model_config,
 )
 
 GPTInputType: TypeAlias = jaxtyping.Int[torch.Tensor, "batch_size num_tokens"]
@@ -173,7 +170,7 @@ class GPTModel(nn.Module):
         """
         super().__init__()
         self.model_size = model_size
-        self.config = self.get_model_config(self.model_size)
+        self.config = get_model_config(self.model_size)
         self.tok_emb = nn.Embedding(self.config.vocab_size, self.config.emb_dim)
         self.pos_emb = nn.Embedding(self.config.ctx_len, self.config.emb_dim)
         self.drop_emb = nn.Dropout(self.config.drop_rate)
@@ -182,19 +179,6 @@ class GPTModel(nn.Module):
 
         self.final_norm = LayerNorm(self.config.emb_dim)
         self.out_head = nn.Linear(self.config.emb_dim, self.config.vocab_size, bias=False)
-
-    @staticmethod
-    def get_model_config(model_size: str | GPTModelSize) -> GPTModelConfig:
-        if model_size == GPTModelSize.SMALL:
-            return GPT_124M_MODEL_CONFIG
-        elif model_size == GPTModelSize.MEDIUM:
-            return GPT_355M_MODEL_CONFIG
-        elif model_size == GPTModelSize.LARGE:
-            return GPT_774M_MODEL_CONFIG
-        elif model_size == GPTModelSize.XLARGE:
-            return GPT_1558M_MODEL_CONFIG
-        else:
-            raise ValueError(f"Invalid model size: {model_size}")
 
     @jaxtyping.jaxtyped(typechecker=typechecker)
     def forward(self, input_vocab_indexes: GPTInputType) -> GPTOutputType:

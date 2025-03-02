@@ -13,7 +13,7 @@ from toyllm.gpt2.tokenizer import gpt2_tokenizer, text_to_token_ids, token_ids_t
 logger = logging.getLogger(__name__)
 
 
-class TextGenerator:
+class GptTextGenerator:
     def __init__(
         self,
         gpt_model: GPTModel,
@@ -123,20 +123,3 @@ class TextGenerator:
         logits = logits / (temperature + eps)
         probs = torch.softmax(logits, dim=-1)
         return probs
-
-
-if __name__ == "__main__":
-    import time
-
-    gpt = GPTModel("1558M").load("../../models/gpt_1558m.pt")
-    text_generator = TextGenerator(gpt_model=gpt)
-
-    start_time = time.time()
-    prompt_text = "Alan Turing theorized that computers would one day become"
-    generate_text = text_generator.generate(
-        prompt_text=prompt_text,
-        max_gen_tokens=256,
-    )
-    print(generate_text)
-    end_time = time.time()
-    print("Time elapsed: {:.2f}s".format(end_time - start_time))

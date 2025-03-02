@@ -3,7 +3,7 @@ import time
 
 import typer
 
-from toyllm.gpt2 import GPTModel, GPTModelSize, TextGenerator
+from toyllm.gpt2 import GPTModel, GPTModelSize, GptTextGenerator
 
 
 def main(
@@ -12,7 +12,7 @@ def main(
     max_gen_tokens: int = 40,
 ):
     gpt_model = GPTModel(model_size).load(f"{pathlib.Path(__file__).parent}/../../models/gpt_{model_size.lower()}.pt")
-    text_generator = TextGenerator(gpt_model=gpt_model)
+    text_generator = GptTextGenerator(gpt_model=gpt_model)
 
     start_time = time.time()
     generate_text = text_generator.generate(

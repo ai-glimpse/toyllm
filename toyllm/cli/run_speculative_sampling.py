@@ -2,9 +2,7 @@ import time
 
 import typer
 
-from toyllm.gpt2 import GPTModel
-from toyllm.gpt2 import TextGenerator as GptTextGenerator
-from toyllm.gpt2 import gpt2_tokenizer
+from toyllm.gpt2 import GPTModel, GptTextGenerator, gpt2_tokenizer
 from toyllm.sps import GPTSpsModel, SpsTextGenerator
 
 
