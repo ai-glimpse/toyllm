@@ -4,7 +4,7 @@
 
 ### 环境配置
 
-- 推荐使用UV安装依赖
+- 推荐使用 UV 安装依赖
   - 创建虚拟环境：`uv venv -p 3.12`
   - 激活虚拟环境：`source .venv/bin/activate`
   - 安装`toyllm`：`uv pip install toyllm`
@@ -13,7 +13,7 @@
 
 - 拉取本项目到本地
   - `git clone https://github.com/ai-glimpse/toyllm.git`
-- 安装LFS: [https://git-lfs.com](https://git-lfs.com)
+- 安装 LFS: [https://git-lfs.com](https://git-lfs.com)
 - `git lfs install`
 - 下载模型文件
   - 在`toyllm`的根目录下执行`git clone https://huggingface.co/MathewShen/toyllm-gpt2 models`
@@ -22,7 +22,7 @@
 ### 使用
 
 
-- GPT2运行: `python toyllm/cli/run_gpt2.py`
+- GPT2 运行：`python toyllm/cli/run_gpt2.py`
   - `python toyllm/cli/run_gpt2.py --help` 查看参数信息
 
 - Speculative Sampling GPT2: `python toyllm/cli/run_speculative_sampling_gpt2.py`
