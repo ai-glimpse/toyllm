@@ -44,18 +44,15 @@ class TextGenerator:
         temperature: Optional[float] = None,
     ) -> str:
         """
-
-        :param prompt_text: prompt text
-        :param max_gen_tokens: maximum number of tokens to generate
-        :param top_k: only keep `top_k`(logits) candidate tokens to select from.
-        A little `top_k` will reduce the randomness of generated output.
-        `top_k` must be greater than 0, like 5, 10 and so on.
-        :param temperature: "Temperatures greater than 1 will result in more uniformly distributed token probabilities
-        after applying the softmax; temperatures smaller than 1 will result in
-        more confident (sharper or more peaky) distributions after applying the softmax"
-        (https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/01_main-chapter-code/ch05.ipynb)
-        The default temperature value is 0.6 in llama2.
-
+        Args:
+            prompt_text: prompt text
+            max_gen_tokens: maximum number of tokens to generate
+            top_k: only keep `top_k`(logits) candidate tokens to select from. A little `top_k` will reduce the randomness of generated output.`top_k` must be greater than 0, like 5, 10 and so on.
+            temperature: "Temperatures greater than 1 will result in more uniformly distributed token probabilities
+            after applying the softmax; temperatures smaller than 1 will result in
+            more confident (sharper or more peaky) distributions after applying the softmax"
+            (https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/01_main-chapter-code/ch05.ipynb)
+            The default temperature value is 0.6 in llama2.
         """
         # prompt text to tokens: (1, n_tokens)
         prompt_tokens = text_to_token_ids(prompt_text, self.tokenizer).to(self.gpt_model.device)

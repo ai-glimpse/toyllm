@@ -17,24 +17,24 @@ class GPTModelSize(StrEnum):
 class GPTModelConfig:
     """
     GPT Model Architecture Config
-
-    :param vocab_size: vocabulary size
-    :param ctx_len: length of context/block
-    :param emb_dim: embedding size
-    :param n_heads: number of attention heads
-    :param n_layers: number of transformer layers
-    :param drop_rate: dropout rate
-    :param qkv_bias: query key value bias terms
     """
 
     name: str
+    """The name of the model"""
     vocab_size: int
+    """The size of the vocabulary"""
     ctx_len: int
+    """The length of the context/block"""
     emb_dim: int
+    """The embedding size"""
     n_heads: int
+    """The number of attention heads"""
     n_layers: int
+    """The number of transformer layers"""
     drop_rate: float
+    """The dropout rate"""
     qkv_bias: bool
+    """The query key value bias terms"""
 
 
 GPT_124M_MODEL_CONFIG = GPTModelConfig(

@@ -79,7 +79,6 @@ class MultiHeadAttention(nn.Module):
         attn_scores.masked_fill_(mask_bool, -torch.inf)
 
         attn_weights = torch.softmax(attn_scores / keys.shape[-1] ** 0.5, dim=-1)
-        # TODO: explain why dropout here
         attn_weights = self.dropout(attn_weights)
 
         # Shape: (b, num_tokens, num_heads, head_dim)
@@ -184,7 +183,8 @@ class GPTModel(nn.Module):
         self.final_norm = LayerNorm(self.config.emb_dim)
         self.out_head = nn.Linear(self.config.emb_dim, self.config.vocab_size, bias=False)
 
-    def get_model_config(self, model_size: str | GPTModelSize) -> GPTModelConfig:
+    @staticmethod
+    def get_model_config(model_size: str | GPTModelSize) -> GPTModelConfig:
         if model_size == GPTModelSize.SMALL:
             return GPT_124M_MODEL_CONFIG
         elif model_size == GPTModelSize.MEDIUM:
