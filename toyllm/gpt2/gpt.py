@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
+import logging
 import pathlib
 from typing import TypeAlias
 
@@ -16,6 +17,9 @@ from toyllm.gpt2.config import (
     GPTModelSize,
     get_model_config,
 )
+
+logger = logging.getLogger(__name__)
+
 
 GPTInputType: TypeAlias = jaxtyping.Int[torch.Tensor, "batch_size num_tokens"]
 GPTInnerType: TypeAlias = jaxtyping.Float[torch.Tensor, "batch_size num_tokens emb_dim"]
@@ -207,7 +211,7 @@ class GPTModel(nn.Module):
     def load(self, model_path: str = "") -> "GPTModel":
         if model_path == "":
             model_path = f"{pathlib.Path(__file__).parents[2]}/models/{self.config.name}.pt"
-        print(f"Loading model from {model_path}")
+        logger.debug(f"Loading model from {model_path}")
         if not pathlib.Path(model_path).exists():
             raise FileNotFoundError(f"Model file not found: {model_path}")
         self.load_state_dict(torch.load(model_path, weights_only=True, map_location=self.device))

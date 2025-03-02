@@ -1,9 +1,9 @@
-import time
-
 import typer
+from rich.console import Console
 
 from toyllm.gpt2 import GPTModel, GPTModelSize, GPTTextGenerator, gpt2_tokenizer
 from toyllm.sps import GPTSpsModel, SpsTextGenerator
+from toyllm.util import Timer
 
 
 def main(
@@ -11,6 +11,8 @@ def main(
     generate_tokens: int = 256,
     k: int = 4,  # K in sps paper
 ):
+    console = Console()
+    console.print(f"Prompt: {prompt_text}", style="bold blue")
     # Test the speculative sampling
     sps_text_generator = SpsTextGenerator(
         tokenizer=gpt2_tokenizer,
@@ -19,34 +21,28 @@ def main(
         lookahead=k,
     )
 
-    start_time = time.time()
-    generate_text = sps_text_generator.generate(
-        prompt=prompt_text,
-        min_gen_tokens=generate_tokens,
-        temperature=0,
-    )
-    end_time = time.time()
-    print(
-        f"[Speculative Sampling]: Time elapsed: {end_time - start_time:.2f}s\n"
-        f"Prompt: {prompt_text}\n"
-        f"Generated: {generate_text[:200]}"
-    )
+    console.print(f"{'-' * 20} Speculative Sampling {'-' * 20}", style="bold blue")
+    with Timer(name="Speculative Sampling"):
+        generate_text = sps_text_generator.generate(
+            prompt=prompt_text,
+            min_gen_tokens=generate_tokens,
+            temperature=0,
+        )
+    console.print(f"Generated: {generate_text[:200]}", style="bold green")
+    console.print(f"{'-' * 20} Speculative Sampling {'-' * 20}", style="bold blue")
 
     # Test the GPT2 model
     gpt = GPTModel(GPTModelSize.XLARGE).load()
     gpt_text_generator = GPTTextGenerator(gpt_model=gpt)
 
-    start_time = time.time()
-    generate_text = gpt_text_generator.generate(
-        prompt=prompt_text,
-        max_gen_tokens=generate_tokens,
-    )
-    end_time = time.time()
-    print(
-        f"[Naive GPT2 Auto-Regressive]: Time elapsed: {end_time - start_time:.2f}s\n"
-        f"Prompt: {prompt_text}\n"
-        f"Generated: {generate_text[:200]}"
-    )
+    console.print(f"{'-' * 20} Naive GPT2 Auto-Regressive {'-' * 20}", style="bold blue")
+    with Timer(name="Naive GPT2 Auto-Regressive"):
+        generate_text = gpt_text_generator.generate(
+            prompt=prompt_text,
+            max_gen_tokens=generate_tokens,
+        )
+    console.print(f"Generated: {generate_text[:200]}", style="bold green")
+    console.print(f"{'-' * 20} Naive GPT2 Auto-Regressive {'-' * 20}", style="bold blue")
 
 
 if __name__ == "__main__":

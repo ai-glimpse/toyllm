@@ -33,6 +33,7 @@ dependencies = [
     "tiktoken",
     "jaxtyping",
     "typer>=0.15.2",
+    "rich>=13.9.4",
 ]
 
 [project.optional-dependencies]
