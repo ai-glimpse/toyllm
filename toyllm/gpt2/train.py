@@ -26,7 +26,7 @@ def get_data_loaders(
     # set train/validation split index by train_ratio
     split_idx = int(train_ratio * len(text))
     train_loader = gpt_data_loader.create_dataloader(text=text[:split_idx], drop_last=True, shuffle=True)
-    validation_loader = gpt_data_loader.create_dataloader(text=text[:split_idx], drop_last=False, shuffle=False)
+    validation_loader = gpt_data_loader.create_dataloader(text=text[split_idx:], drop_last=False, shuffle=False)
     return train_loader, validation_loader
 
 
