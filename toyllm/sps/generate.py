@@ -69,9 +69,9 @@ class SpsTextGenerator:
                     qx = target_model_probs[t, x]
 
                     # if r < min(1, q(x) / p(x)), then (accept x)
-                    if r < min(1.0, (qx / px).cpu().item()):
-                        next_generated_token = x
-                        prompt_tokens = torch.cat([prompt_tokens, next_generated_token.unsqueeze(0)], dim=0)
+                    if r < min(1.0, (qx / px)):
+                        next_token_id = x.unsqueeze(0)
+                        prompt_tokens = torch.cat([prompt_tokens, next_token_id], dim=0)
                         n += 1
                     else:
                         all_accept = False
@@ -79,14 +79,14 @@ class SpsTextGenerator:
                         # element-wise max to 0
                         prob_diff = torch.clamp(prob_diff, min=0)
                         prob_diff = prob_diff / torch.sum(prob_diff)
-                        next_generated_token = torch.multinomial(prob_diff, num_samples=1)
-                        prompt_tokens = torch.cat((prompt_tokens, next_generated_token), dim=0)
+                        next_token_id = torch.multinomial(prob_diff, num_samples=1)
+                        prompt_tokens = torch.cat((prompt_tokens, next_token_id), dim=0)
                         n += 1
                         break
 
                 if all_accept:
-                    next_generated_token = torch.multinomial(target_model_probs[-1], num_samples=1)
-                    prompt_tokens = torch.cat([prompt_tokens, next_generated_token], dim=0)
+                    next_token_id = torch.multinomial(target_model_probs[-1], num_samples=1)
+                    prompt_tokens = torch.cat([prompt_tokens, next_token_id], dim=0)
                     n += 1
         generate_text = self.tokenizer.decode(prompt_tokens.tolist())
         return generate_text
