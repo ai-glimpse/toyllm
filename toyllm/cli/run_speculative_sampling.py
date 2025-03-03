@@ -25,7 +25,7 @@ def main(
     with Timer(name="Speculative Sampling"):
         generate_text = sps_text_generator.generate(
             prompt=prompt_text,
-            min_gen_tokens=generate_tokens,
+            target_seq_len=generate_tokens,
             temperature=0,
         )
     console.print(f"Generated: {generate_text[:200]}", style="bold green")

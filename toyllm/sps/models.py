@@ -8,7 +8,12 @@ from toyllm.gpt2.gpt import GPTModel, GPTModelSize
 
 class BaseSpsModel(ABC):
     @abstractmethod
-    def get_next_token_logits(self, prompt_token: torch.Tensor) -> torch.Tensor:
+    def forward(
+        self,
+        prompt_token: torch.Tensor,
+        temperature: None | float = None,
+        eps: float = 1e-8,
+    ) -> torch.Tensor:
         raise NotImplementedError
 
     @abstractmethod
@@ -27,9 +32,18 @@ class GPTSpsModel(BaseSpsModel):
         if self.gpt_model.device != current_device:
             self.gpt_model.to(current_device)
 
-    def get_next_token_logits(self, prompt_token: torch.Tensor) -> torch.Tensor:
-        logits = self.gpt_model.forward(prompt_token)
-        return logits
+    def forward(
+        self,
+        prompt_token: torch.Tensor,
+        temperature: None | float = None,
+        eps: float = 1e-8,
+    ) -> torch.Tensor:
+        logits = self.gpt_model.forward(prompt_token.unsqueeze(0)).squeeze(0)
+
+        if temperature is not None:
+            logits = logits / (temperature + eps)
+        probs = torch.softmax(logits, dim=-1)
+        return probs
 
     def get_context_length(self) -> int:
         return 1024
