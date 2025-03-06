@@ -134,7 +134,7 @@ select = ["ALL"]
 ignore = [
     "ANN001",   # TODO remove: Missing type annotation for function argument
     "ANN201",   # Missing return type annotation for public function
-    "G004",     #  Logging statement uses f-string
+    "G004",     # Logging statement uses f-string
 
     "FBT001",  # Boolean-typed positional argument in function definition
     "FBT002",  # Boolean default positional argument in function definition
@@ -157,10 +157,9 @@ ignore = [
 pydocstyle = { convention = "google" }
 
 [tool.ruff.lint.per-file-ignores]
-#'docs/*' = ["ALL"]
-'tests/*' = ["ALL"]
-'playground/*' = ["ALL"]
-'toyllm/gpt2/*' = ["F722"]  # TODO: Fix this: Syntax error in forward annotation: `1 num_tokens`
+'playground/glimpse/top-down/*' = ["ALL"]
+# TODO: Fix this: Syntax error in forward annotation: `1 num_tokens`
+'toyllm/gpt2/*' = ["F722"]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
