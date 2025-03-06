@@ -157,10 +157,9 @@ ignore = [
 pydocstyle = { convention = "google" }
 
 [tool.ruff.lint.per-file-ignores]
-'docs/*' = ["ALL"]
+#'docs/*' = ["ALL"]
 'tests/*' = ["ALL"]
 'playground/*' = ["ALL"]
-'toyllm/util/*' = ["ALL"]
 'toyllm/gpt2/*' = ["F722"]  # TODO: Fix this: Syntax error in forward annotation: `1 num_tokens`
 
 # Allow fix for all enabled rules (when `--fix`) is provided.

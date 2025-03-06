@@ -1,5 +1,9 @@
 import time
-from typing import Any, Optional, Type
+import types
+
+# Constants for time conversion
+_MICROSECOND_THRESHOLD = 0.001  # 1 millisecond in seconds
+_MILLISECOND_THRESHOLD = 1.0  # 1 second
 
 
 class Timer:
@@ -23,9 +27,9 @@ class Timer:
 
     def __exit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_val: Optional[BaseException],
-        exc_tb: Any,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: types.TracebackType | None,
     ) -> None:
         """Stop the timer when exiting the context."""
         self.end_time = time.perf_counter()
@@ -35,9 +39,9 @@ class Timer:
     def _print_result(self) -> None:
         """Print the execution time using rich formatting."""
         # Choose a proper time unit based on magnitude
-        if self.elapsed < 0.001:  # less than 1ms
+        if self.elapsed < _MICROSECOND_THRESHOLD:  # less than 1ms
             time_str = f"{self.elapsed * 1_000_000:.2f} μs"
-        elif self.elapsed < 1:  # less than 1s
+        elif self.elapsed < _MILLISECOND_THRESHOLD:  # less than 1s
             time_str = f"{self.elapsed * 1_000:.2f} ms"
         else:
             time_str = f"{self.elapsed:.4f} s"
