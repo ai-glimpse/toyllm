@@ -84,7 +84,7 @@ extra-index-url = ["https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"]
 
 [tool.mypy]
 strict = true
-# exclude all files in plaground
+# exclude all files in playground
 exclude = ["playground/*"]
 ignore_missing_imports = true
 disallow_untyped_decorators = false
