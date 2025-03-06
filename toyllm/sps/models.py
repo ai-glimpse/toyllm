@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 import torch
 
 from toyllm.device import current_device
-from toyllm.gpt2.gpt import GPTModel, GPTModelSize
+from toyllm.gpt2 import GPTModel, GPTModelSize
 
 
 class BaseSpsModel(ABC):
@@ -26,7 +26,7 @@ class BaseSpsModel(ABC):
 
 
 class GPTSpsModel(BaseSpsModel):
-    def __init__(self, model_size: GPTModelSize):
+    def __init__(self, model_size: GPTModelSize) -> None:
         self.gpt_model = GPTModel(model_size).load()
         self.gpt_model.eval()
         if self.gpt_model.device != current_device:

@@ -4,7 +4,6 @@
 #   - https://www.manning.com/books/build-a-large-language-model-from-scratch
 # Code: https://github.com/rasbt/LLMs-from-scratch
 
-from typing import Tuple
 
 import matplotlib.pyplot as plt
 import torch
@@ -22,7 +21,7 @@ def get_data_loaders(
     text: str,
     gpt_data_loader: GPTDataloader,
     train_ratio: float = 0.9,
-) -> Tuple[DataLoader, DataLoader]:
+) -> tuple[DataLoader, DataLoader]:
     # set train/validation split index by train_ratio
     split_idx = int(train_ratio * len(text))
     train_loader = gpt_data_loader.create_dataloader(text=text[:split_idx], drop_last=True, shuffle=True)
@@ -39,10 +38,7 @@ def calc_loss_batch(input_batch, target_batch, model):
 
 def calc_loss_loader(data_loader, model, num_batches=None):
     total_loss = 0.0
-    if num_batches is None:
-        num_batches = len(data_loader)
-    else:
-        num_batches = min(num_batches, len(data_loader))
+    num_batches = len(data_loader) if num_batches is None else min(num_batches, len(data_loader))
     for i, (input_batch, target_batch) in enumerate(data_loader):
         if i < num_batches:
             loss = calc_loss_batch(input_batch, target_batch, model)
@@ -61,7 +57,7 @@ def evaluate_model(model, train_loader, val_loader, eval_iter):
     return train_loss, val_loss
 
 
-def generate_and_print_sample(model, tokenizer, start_context):
+def generate_and_print_sample(model, tokenizer, start_context) -> None:
     model.eval()
     text_generate = GPTTextGenerator(gpt_model=model, tokenizer=tokenizer)
     generate_text = text_generate.generate(prompt=start_context, max_gen_tokens=50, temperature=0.9, top_k=10)
@@ -69,7 +65,16 @@ def generate_and_print_sample(model, tokenizer, start_context):
     model.train()
 
 
-def train_model_simple(model, train_loader, val_loader, optimizer, num_epochs, eval_freq, eval_iter, start_context):
+def train_model_simple(
+    model,
+    train_loader,
+    val_loader,
+    optimizer,
+    num_epochs,
+    eval_freq,
+    eval_iter,
+    start_context,
+):
     # Initialize lists to track losses and tokens seen
     train_losses, val_losses, track_tokens_seen = [], [], []
     tokens_seen = 0
@@ -101,7 +106,7 @@ def train_model_simple(model, train_loader, val_loader, optimizer, num_epochs, e
     return train_losses, val_losses, track_tokens_seen
 
 
-def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses):
+def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses) -> None:
     fig, ax1 = plt.subplots()
 
     # Plot training and validation loss against epochs
@@ -130,7 +135,9 @@ def main(
     model = GPTModel(gpt_size)
     model.to(current_device)
     optimizer = torch.optim.AdamW(
-        model.parameters(), lr=training_config.learning_rate, weight_decay=training_config.weight_decay
+        model.parameters(),
+        lr=training_config.learning_rate,
+        weight_decay=training_config.weight_decay,
     )
     tokenizer = get_gpt2_tokenizer()
 

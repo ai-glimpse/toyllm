@@ -17,9 +17,11 @@ def text_to_token_ids(
     text: str,
     tokenizer: tiktoken.Encoding = gpt2_tokenizer,
 ) -> jaxtyping.Int[torch.Tensor, "1 num_tokens"]:
-    """
-    >>> text_to_token_ids("Hello World", get_gpt2_tokenizer())
-    tensor([[15496,  2159]])
+    """Transform text to token ids.
+
+    Example:
+        >>> text_to_token_ids("Hello World", get_gpt2_tokenizer())
+        tensor([[15496,  2159]])
     """
     text_id_list = tokenizer.encode(text)
     text_id_tensor = torch.tensor(text_id_list).unsqueeze(0)  # add batch dimension
@@ -31,9 +33,11 @@ def token_ids_to_text(
     text_id_tensor: jaxtyping.Int[torch.Tensor, "1 num_tokens"],
     tokenizer: tiktoken.Encoding = gpt2_tokenizer,
 ) -> str:
-    """
-    >>> token_ids_to_text(torch.tensor([[15496,  2159]]), get_gpt2_tokenizer())
-    'Hello World'
+    """Transform token ids to text.
+
+    Example:
+        >>> token_ids_to_text(torch.tensor([[15496, 2159]]), get_gpt2_tokenizer())
+        'Hello World'.
     """
     text_id_list = text_id_tensor.squeeze(0)  # remove batch dimension
     text = tokenizer.decode(text_id_list.tolist())

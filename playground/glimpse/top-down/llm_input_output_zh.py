@@ -33,7 +33,6 @@ def __():
 @app.cell
 def __(mo):
     mo.md(r"""## 1. 概述：Prompt与Response""")
-    return
 
 
 @app.cell
@@ -59,7 +58,6 @@ def __(mo, prompt_text, text_generator):
 @app.cell
 def __(mo):
     mo.md(r"""## 2. 步骤：Prompt -> 第一个Token -> ... -> 完整Response""")
-    return
 
 
 @app.cell
@@ -72,21 +70,18 @@ def __(mo, prompt_text):
     之后我们将 Prompt 更改为：*{prompt_text}***{" the most"}**\n
     ... ... \n
     最后，我们得到了之前显示的完整 Response！
-    """
+    """,
     )
-    return
 
 
 @app.cell
 def __(mo):
     mo.md(r"""## 3. 细节：Prompt -> Response中的第一个标记""")
-    return
 
 
 @app.cell
 def __(mo):
     mo.md(r"""### 3.1 Prompt文本 -> Prompt token id""")
-    return
 
 
 @app.cell
@@ -104,7 +99,7 @@ def __(gpt2_tokenizer, mo, prompt_tokens):
     mo.md(
         f"""从 Tokens 我们可以反向获取到 Prompt 的 subwords（由 BPE 生成）：**{subwords}**
         \n注意 **theorized** 被拆分为 **theor** 和 **ized**。所以我们在 Prompt 中得到了 10 个 subwords 和 9 个单词。
-        (还要注意一些子词前的空格）"""
+        (还要注意一些子词前的空格）""",
     )
     return (subwords,)
 
@@ -115,7 +110,7 @@ def __(mo, prompt_tokens, text_generator, torch):
 
     mo.md(
         f"""将 Prompt 标记转换为 torch 张量并按上下文长度（**{text_generator.context_length}**）截断。\n
-    然后我们得到了形状为 **{prompt_tokens_tensor.shape}** 的 prompt_tokens_tensor **{prompt_tokens_tensor}**"""
+    然后我们得到了形状为 **{prompt_tokens_tensor.shape}** 的 prompt_tokens_tensor **{prompt_tokens_tensor}**""",
     )
     return (prompt_tokens_tensor,)
 
@@ -123,7 +118,6 @@ def __(mo, prompt_tokens, text_generator, torch):
 @app.cell
 def __(mo):
     mo.md(r"""### 3.2 Prompt标记 -> 下一个标记的 logits""")
-    return
 
 
 @app.cell
@@ -132,7 +126,7 @@ def __(mo, prompt_tokens_tensor, text_generator, torch):
         logits = text_generator.gpt_model(prompt_tokens_tensor.to(text_generator.gpt_model.device))
 
     mo.md(
-        f"将 `prompt_tokens_tensor` 输入到 GPT2 神经网络中，我们得到了 **logits**，一个形状为 **{logits.shape}** 的张量"
+        f"将 `prompt_tokens_tensor` 输入到 GPT2 神经网络中，我们得到了 **logits**，一个形状为 **{logits.shape}** 的张量",
     )
     return (logits,)
 
@@ -142,7 +136,7 @@ def __(logits, mo):
     logits_last = logits[:, -1, :]
 
     mo.md(
-        f"""仅选择最后的 logits（shape 为 **{logits_last.shape}**），这是词表（包含 50,527 个 Token）上下一个标记的 logits（可以视为未归一化的概率）"""
+        f"""仅选择最后的 logits（shape 为 **{logits_last.shape}**），这是词表（包含 50,527 个 Token）上下一个标记的 logits（可以视为未归一化的概率）""",
     )
     return (logits_last,)
 
@@ -150,7 +144,6 @@ def __(logits, mo):
 @app.cell
 def __(mo):
     mo.md(r"""### 3.3 下一个标记的 logits -> 下一个标记（Response中的第一个标记）""")
-    return
 
 
 @app.cell
@@ -160,7 +153,7 @@ def __(logits_last, mo, text_generator, torch):
 
     mo.md(
         f"""对最后的 logit 应用 topK 采样和 Temperature 缩放，我们得到了下一个标记 id：
-    **{next_token_id}**"""
+    **{next_token_id}**""",
     )
     return logits_last_with_top_k, next_token_id
 
@@ -176,23 +169,20 @@ def __(gpt2_tokenizer, mo, next_token_id):
 @app.cell
 def __(mo):
     mo.md(r"""### 3.4 下一个Token（Response中的第一个Token） -> 完整Response""")
-    return
 
 
 @app.cell
 def __(mo):
     mo.md(
-        """添加 Response 中的第一个标记，我们得到了一个新的 Prompt，将其输入到 llm 中，我们得到了一个新的下一个标记，...，最后我们将得到开头显示的完整 Response！"""
+        """添加 Response 中的第一个标记，我们得到了一个新的 Prompt，将其输入到 llm 中，我们得到了一个新的下一个标记，...，最后我们将得到开头显示的完整 Response！""",
     )
-    return
 
 
 @app.cell
 def __(mo):
     mo.md(
-        """由 [ToyLLM](https://github.com/ai-glimpse/toyllm) 提供支持 | 作者：[MathewShen](https://github.com/shenxiangzhuang)"""
+        """由 [ToyLLM](https://github.com/ai-glimpse/toyllm) 提供支持 | 作者：[MathewShen](https://github.com/shenxiangzhuang)""",
     ).center()
-    return
 
 
 @app.cell

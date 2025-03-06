@@ -10,7 +10,7 @@ def main(
     prompt_text: str = "Alan Turing theorized that computers would one day become",
     generate_tokens: int = 256,
     k: int = 4,  # K in sps paper
-):
+) -> None:
     console = Console()
     console.print(f"Prompt: {prompt_text}", style="bold blue")
     # Test the speculative sampling

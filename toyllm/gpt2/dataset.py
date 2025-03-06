@@ -14,13 +14,14 @@ def get_dataset_dir() -> pathlib.Path:
 
 
 class GPTDataset(Dataset):
-    def __init__(self, txt: str, tokenizer: tiktoken.Encoding, max_length: int, stride: int):
-        """
+    def __init__(self, txt: str, tokenizer: tiktoken.Encoding, max_length: int, stride: int) -> None:
+        """The GPTDataset class is used to create a PyTorch dataset from a text file.
+
         Args:
             txt: txt data
             tokenizer: tokenizer object
             max_length: max length
-            stride: stride size
+            stride: stride size.
         """
         self.tokenizer = tokenizer
         self.input_ids = []
@@ -36,10 +37,10 @@ class GPTDataset(Dataset):
             self.input_ids.append(torch.tensor(input_chunk))
             self.target_ids.append(torch.tensor(target_chunk))
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.input_ids)
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx) -> tuple[torch.Tensor, torch.Tensor]:
         return self.input_ids[idx], self.target_ids[idx]
 
 
@@ -50,7 +51,7 @@ class GPTDataloader:
         max_length: int,
         stride: int,
         batch_size: int,
-    ):
+    ) -> None:
         self.tokenizer = tokenizer
         self.max_length = max_length
         self.stride = stride
@@ -75,14 +76,14 @@ def read_simple_text_file() -> str:
     # if not exists, download it first
     if not file_path.exists():
         logger.info(f"Downloading {url} to {file_path}")
-        with urllib.request.urlopen(url) as response:
+        with urllib.request.urlopen(url) as response:  # noqa: S310
             text_data = response.read().decode("utf-8")
-        with open(file_path, "w", encoding="utf-8") as file:
+        with pathlib.Path.open(file_path, "w", encoding="utf-8") as file:
             file.write(text_data)
 
         logger.info(f"Saved {file_path}")
     # open the file
-    with open(file_path, "r", encoding="utf-8") as file:
+    with pathlib.Path.open(file_path, encoding="utf-8") as file:
         text_data = file.read()
     return text_data
 

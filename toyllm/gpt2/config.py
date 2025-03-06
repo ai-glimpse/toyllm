@@ -1,11 +1,9 @@
 from dataclasses import dataclass
-from enum import StrEnum  # type: ignore[attr-defined]
+from enum import StrEnum
 
 
 class GPTModelSize(StrEnum):
-    """
-    Enum class for GPT model size
-    """
+    """Enum class for GPT model size."""
 
     SMALL = "124M"
     MEDIUM = "355M"
@@ -15,9 +13,7 @@ class GPTModelSize(StrEnum):
 
 @dataclass
 class GPTModelConfig:
-    """
-    GPT Model Architecture Config
-    """
+    """GPT Model Architecture Config."""
 
     name: str
     """The name of the model"""
@@ -86,21 +82,19 @@ GPT_1558M_MODEL_CONFIG = GPTModelConfig(
 def get_model_config(model_size: GPTModelSize) -> GPTModelConfig:
     if model_size == GPTModelSize.SMALL:
         return GPT_124M_MODEL_CONFIG
-    elif model_size == GPTModelSize.MEDIUM:
+    if model_size == GPTModelSize.MEDIUM:
         return GPT_355M_MODEL_CONFIG
-    elif model_size == GPTModelSize.LARGE:
+    if model_size == GPTModelSize.LARGE:
         return GPT_774M_MODEL_CONFIG
-    elif model_size == GPTModelSize.XLARGE:
+    if model_size == GPTModelSize.XLARGE:
         return GPT_1558M_MODEL_CONFIG
-    else:
-        raise ValueError(f"Invalid model size: {model_size}")
+    msg = f"Invalid model size: {model_size}"
+    raise ValueError(msg)
 
 
 @dataclass
 class GPTTrainingConfig:
-    """
-    GPT training config: hyperparameters for GPT model training
-    """
+    """GPT training config: hyperparameters for GPT model training."""
 
     learning_rate: float = 5e-4
     num_epochs: int = 10

@@ -15,7 +15,7 @@ class SpsTextGenerator:
     lookahead: int = 5  # K in sps paper
     seed: int = 42
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.rng = np.random.default_rng(self.seed)
 
     def generate(
@@ -24,14 +24,14 @@ class SpsTextGenerator:
         target_seq_len: int = 100,
         temperature: None | float = None,
     ) -> str:
-        """
-        Args:
-            prompt: Prompt text
-            target_seq_len: The `T` in paper.
-            The target sequence length to generate.
-            temperature: Used to control the randomness of the generated text.
-        """
+        """Generate text using Speculative Sampling.
 
+        Args:
+        prompt: Prompt text
+        target_seq_len: The `T` in paper.
+        The target sequence length to generate.
+        temperature: Used to control the randomness of the generated text.
+        """
         # sequence x0, x1, ..., xt
         text_id_list = self.tokenizer.encode(prompt)
         prompt_tokens = torch.tensor(text_id_list).to(self.target_model.device())
@@ -69,7 +69,7 @@ class SpsTextGenerator:
                     qx = target_model_probs[t, x]
 
                     # if r < min(1, q(x) / p(x)), then (accept x)
-                    if r < min(1.0, (qx / px)):
+                    if r < min(1.0, (qx / px).cpu().item()):
                         next_token_id = x.unsqueeze(0)
                         prompt_tokens = torch.cat([prompt_tokens, next_token_id], dim=0)
                         n += 1
