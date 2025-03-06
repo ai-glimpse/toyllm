@@ -132,8 +132,6 @@ target-version = "py311"
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-    "ANN001",   # TODO remove: Missing type annotation for function argument
-
     "FBT001",  # Boolean-typed positional argument in function definition
     "FBT002",  # Boolean default positional argument in function definition
     "S101",    # assert
