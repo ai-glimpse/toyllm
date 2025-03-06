@@ -37,7 +37,7 @@ def token_ids_to_text(
 
     Example:
         >>> token_ids_to_text(torch.tensor([[15496, 2159]]), get_gpt2_tokenizer())
-        'Hello World'.
+        'Hello World'
     """
     text_id_list = text_id_tensor.squeeze(0)  # remove batch dimension
     text = tokenizer.decode(text_id_list.tolist())

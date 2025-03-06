@@ -4,4 +4,4 @@ from .config import GPTModelSize
 from .generate import GPTTextGenerator
 from .gpt import GPTModel
 
-__all__ = ["GPTModel", "GPTTextGenerator", "GPTModelSize", "gpt2_tokenizer"]
+__all__ = ["GPTModel", "GPTModelSize", "GPTTextGenerator", "gpt2_tokenizer"]
