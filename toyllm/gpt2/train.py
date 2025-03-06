@@ -6,6 +6,7 @@
 
 
 import matplotlib.pyplot as plt
+import tiktoken
 import torch
 from torch.utils.data import DataLoader
 
@@ -21,7 +22,7 @@ def get_data_loaders(
     text: str,
     gpt_data_loader: GPTDataloader,
     train_ratio: float = 0.9,
-) -> tuple[DataLoader, DataLoader]:
+) -> tuple[DataLoader, DataLoader]:  # type: ignore[type-arg]
     # set train/validation split index by train_ratio
     split_idx = int(train_ratio * len(text))
     train_loader = gpt_data_loader.create_dataloader(text=text[:split_idx], drop_last=True, shuffle=True)
@@ -29,14 +30,18 @@ def get_data_loaders(
     return train_loader, validation_loader
 
 
-def calc_loss_batch(input_batch, target_batch, model):
+def calc_loss_batch(input_batch: torch.Tensor, target_batch: torch.Tensor, model: GPTModel) -> torch.Tensor:
     input_batch, target_batch = input_batch.to(current_device), target_batch.to(current_device)
     logits = model(input_batch)
     loss = torch.nn.functional.cross_entropy(logits.flatten(0, 1), target_batch.flatten())
     return loss
 
 
-def calc_loss_loader(data_loader, model, num_batches=None):
+def calc_loss_loader(
+    data_loader: DataLoader,  # type: ignore[type-arg]
+    model: GPTModel,
+    num_batches: int | None = None,
+) -> float:
     total_loss = 0.0
     num_batches = len(data_loader) if num_batches is None else min(num_batches, len(data_loader))
     for i, (input_batch, target_batch) in enumerate(data_loader):
@@ -48,7 +53,12 @@ def calc_loss_loader(data_loader, model, num_batches=None):
     return total_loss / num_batches
 
 
-def evaluate_model(model, train_loader, val_loader, eval_iter):
+def evaluate_model(
+    model: GPTModel,
+    train_loader: DataLoader,  # type: ignore[type-arg]
+    val_loader: DataLoader,  # type: ignore[type-arg]
+    eval_iter: int,
+) -> tuple[float, float]:
     model.eval()
     with torch.no_grad():
         train_loss = calc_loss_loader(train_loader, model, num_batches=eval_iter)
@@ -57,7 +67,7 @@ def evaluate_model(model, train_loader, val_loader, eval_iter):
     return train_loss, val_loss
 
 
-def generate_and_print_sample(model, tokenizer, start_context) -> None:
+def generate_and_print_sample(model: GPTModel, tokenizer: tiktoken.Encoding, start_context: str) -> None:
     model.eval()
     text_generate = GPTTextGenerator(gpt_model=model, tokenizer=tokenizer)
     generate_text = text_generate.generate(prompt=start_context, max_gen_tokens=50, temperature=0.9, top_k=10)
@@ -66,15 +76,15 @@ def generate_and_print_sample(model, tokenizer, start_context) -> None:
 
 
 def train_model_simple(
-    model,
-    train_loader,
-    val_loader,
-    optimizer,
-    num_epochs,
-    eval_freq,
-    eval_iter,
-    start_context,
-):
+    model: GPTModel,
+    train_loader: DataLoader,  # type: ignore[type-arg]
+    val_loader: DataLoader,  # type: ignore[type-arg]
+    optimizer: torch.optim.Optimizer,  # type: ignore[name-defined]
+    num_epochs: int,
+    eval_freq: int,
+    eval_iter: int,
+    start_context: str,
+) -> tuple[list[float], list[float], list[int]]:
     # Initialize lists to track losses and tokens seen
     train_losses, val_losses, track_tokens_seen = [], [], []
     tokens_seen = 0
@@ -87,7 +97,8 @@ def train_model_simple(
         for input_batch, target_batch in train_loader:
             optimizer.zero_grad()  # Reset loss gradients from previous epoch
             loss = calc_loss_batch(input_batch, target_batch, model)
-            loss.backward()  # Calculate loss gradients
+            # Calculate loss gradients
+            loss.backward()  # type: ignore[no-untyped-call]
             optimizer.step()  # Update model weights using loss gradients
             tokens_seen += input_batch.numel()
             global_step += 1
@@ -101,12 +112,17 @@ def train_model_simple(
                 print(f"Ep {epoch + 1} (Step {global_step:06d}): Train loss {train_loss:.3f}, Val loss {val_loss:.3f}")
 
         # Print a sample text after each epoch
-        generate_and_print_sample(model, train_loader.dataset.tokenizer, start_context)
+        generate_and_print_sample(model, train_loader.dataset.tokenizer, start_context)  # type: ignore[attr-defined]
 
     return train_losses, val_losses, track_tokens_seen
 
 
-def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses) -> None:
+def plot_losses(
+    epochs_seen: torch.Tensor,
+    tokens_seen: list[int],
+    train_losses: list[float],
+    val_losses: list[float],
+) -> None:
     fig, ax1 = plt.subplots()
 
     # Plot training and validation loss against epochs
@@ -129,12 +145,12 @@ def main(
     text: str,
     gpt_size: GPTModelSize,
     training_config: GPTTrainingConfig,
-):
+) -> tuple[list[float], list[float], list[int], GPTModel]:
     torch.manual_seed(123)
     # Initialize model
     model = GPTModel(gpt_size)
     model.to(current_device)
-    optimizer = torch.optim.AdamW(
+    optimizer = torch.optim.AdamW(  # type: ignore[attr-defined]
         model.parameters(),
         lr=training_config.learning_rate,
         weight_decay=training_config.weight_decay,

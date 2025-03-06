@@ -90,7 +90,7 @@ class MultiHeadAttention(nn.Module):
         context_vec = context_vec.contiguous().view(batch_size, num_tokens, self.d_out)
         context_vec = self.out_proj(context_vec)  # optional projection
 
-        return context_vec
+        return context_vec  # type: ignore[no-any-return]
 
 
 class LayerNorm(nn.Module):
@@ -129,7 +129,7 @@ class FeedForward(nn.Module):
 
     @jaxtyping.jaxtyped(typechecker=typechecker)
     def forward(self, x: GPTInnerType) -> GPTInnerType:
-        return self.layers(x)
+        return self.layers(x)  # type: ignore[no-any-return]
 
 
 class TransformerBlock(nn.Module):
@@ -200,7 +200,7 @@ class GPTModel(nn.Module):
         x = self.trf_blocks(x)
         x = self.final_norm(x)
         logits = self.out_head(x)
-        return logits
+        return logits  # type: ignore[no-any-return]
 
     @property
     def device(self) -> torch.device:

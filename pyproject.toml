@@ -83,10 +83,11 @@ extra-index-url = ["https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"]
 
 
 [tool.mypy]
-ignore_missing_imports = true
 strict = true
 # exclude all files in plaground
 exclude = ["playground/*"]
+ignore_missing_imports = true
+disallow_untyped_decorators = false
 
 
 # Ruff configuration: https://docs.astral.sh/ruff/configuration/#configuring-ruff
@@ -170,7 +171,9 @@ unfixable = []
 [tool.ruff.format]
 # Like Black, use double quotes for strings.
 quote-style = "double"
-
+exclude = [
+    "COM812",
+]
 # Like Black, indent with spaces, rather than tabs.
 indent-style = "space"
 

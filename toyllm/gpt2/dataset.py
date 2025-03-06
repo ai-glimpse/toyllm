@@ -13,7 +13,7 @@ def get_dataset_dir() -> pathlib.Path:
     return pathlib.Path(__file__).parents[1] / "dataset"
 
 
-class GPTDataset(Dataset):
+class GPTDataset(Dataset):  # type: ignore[type-arg]
     def __init__(self, txt: str, tokenizer: tiktoken.Encoding, max_length: int, stride: int) -> None:
         """The GPTDataset class is used to create a PyTorch dataset from a text file.
 
@@ -40,7 +40,7 @@ class GPTDataset(Dataset):
     def __len__(self) -> int:
         return len(self.input_ids)
 
-    def __getitem__(self, idx) -> tuple[torch.Tensor, torch.Tensor]:
+    def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
         return self.input_ids[idx], self.target_ids[idx]
 
 
@@ -57,7 +57,7 @@ class GPTDataloader:
         self.stride = stride
         self.batch_size = batch_size
 
-    def create_dataloader(self, text: str, shuffle=True, drop_last=True) -> DataLoader:
+    def create_dataloader(self, text: str, shuffle=True, drop_last=True) -> DataLoader:  # type: ignore[no-untyped-def,type-arg]
         # Create dataset
         dataset = GPTDataset(text, self.tokenizer, self.max_length, self.stride)
 
@@ -84,8 +84,8 @@ def read_simple_text_file() -> str:
         logger.info(f"Saved {file_path}")
     # open the file
     with pathlib.Path.open(file_path, encoding="utf-8") as file:
-        text_data = file.read()
-    return text_data
+        text = file.read()
+    return text
 
 
 if __name__ == "__main__":
