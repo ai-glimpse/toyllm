@@ -212,7 +212,7 @@ class GPTModel(nn.Module):
     def load(self, model_path: str = "") -> "GPTModel":
         if model_path == "":
             model_path = f"{pathlib.Path(__file__).parents[2]}/models/{self.config.name}.pt"
-        logger.debug(f"Loading model from {model_path}")
+        logger.debug("Loading model from %s", model_path)
         if not pathlib.Path(model_path).exists():
             msg = f"Model file not found: {model_path}"
             raise FileNotFoundError(msg)

@@ -75,13 +75,13 @@ def read_simple_text_file() -> str:
 
     # if not exists, download it first
     if not file_path.exists():
-        logger.info(f"Downloading {url} to {file_path}")
+        logger.info("Downloading %s to %s", url, file_path)
         with urllib.request.urlopen(url) as response:  # noqa: S310
             text_data = response.read().decode("utf-8")
         with pathlib.Path.open(file_path, "w", encoding="utf-8") as file:
             file.write(text_data)
 
-        logger.info(f"Saved {file_path}")
+        logger.info("Saved %s}", file_path)
     # open the file
     with pathlib.Path.open(file_path, encoding="utf-8") as file:
         text = file.read()
