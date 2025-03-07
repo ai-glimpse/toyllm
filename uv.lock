@@ -1,9 +1,5 @@
 version = 1
 requires-python = ">=3.11, <3.13"
-resolution-markers = [
-    "python_full_version < '3.12'",
-    "python_full_version >= '3.12'",
-]
 
 [[package]]
 name = "anyio"
@@ -55,30 +51,6 @@ source = { registry = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple" }
 sdist = { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/2a/74/f1bc80f23eeba13393b7222b11d95ca3af2c1e28edca18af487137eefed9/babel-2.16.0.tar.gz", hash = "sha256:d1f3554ca26605fe173f3de0c65f750f5a42f924499bf134de6423582298e316", size = 9348104 }
 wheels = [
     { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/ed/20/bc79bc575ba2e2a7f70e8a1155618bb1301eaa5132a8271373a6903f73f8/babel-2.16.0-py3-none-any.whl", hash = "sha256:368b5b98b37c06b7daf6696391c3240c938b37767d4584413e8438c5c435fa8b", size = 9587599 },
-]
-
-[[package]]
-name = "black"
-version = "24.8.0"
-source = { registry = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple" }
-dependencies = [
-    { name = "click" },
-    { name = "mypy-extensions" },
-    { name = "packaging" },
-    { name = "pathspec" },
-    { name = "platformdirs" },
-]
-sdist = { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/04/b0/46fb0d4e00372f4a86a6f8efa3cb193c9f64863615e39010b1477e010578/black-24.8.0.tar.gz", hash = "sha256:2500945420b6784c38b9ee885af039f5e7471ef284ab03fa35ecdde4688cd83f", size = 644810 }
-wheels = [
-    { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/08/a6/0a3aa89de9c283556146dc6dbda20cd63a9c94160a6fbdebaf0918e4a3e1/black-24.8.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:fb6e2c0b86bbd43dee042e48059c9ad7830abd5c94b0bc518c0eeec57c3eddc1", size = 1615080 },
-    { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/db/94/b803d810e14588bb297e565821a947c108390a079e21dbdcb9ab6956cd7a/black-24.8.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:837fd281f1908d0076844bc2b801ad2d369c78c45cf800cad7b61686051041af", size = 1438143 },
-    { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/a5/b5/f485e1bbe31f768e2e5210f52ea3f432256201289fd1a3c0afda693776b0/black-24.8.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:62e8730977f0b77998029da7971fa896ceefa2c4c4933fcd593fa599ecbf97a4", size = 1738774 },
-    { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/a8/69/a000fc3736f89d1bdc7f4a879f8aaf516fb03613bb51a0154070383d95d9/black-24.8.0-cp311-cp311-win_amd64.whl", hash = "sha256:72901b4913cbac8972ad911dc4098d5753704d1f3c56e44ae8dce99eecb0e3af", size = 1427503 },
-    { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/a2/a8/05fb14195cfef32b7c8d4585a44b7499c2a4b205e1662c427b941ed87054/black-24.8.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:7c046c1d1eeb7aea9335da62472481d3bbf3fd986e093cffd35f4385c94ae368", size = 1646132 },
-    { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/41/77/8d9ce42673e5cb9988f6df73c1c5c1d4e9e788053cccd7f5fb14ef100982/black-24.8.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:649f6d84ccbae73ab767e206772cc2d7a393a001070a4c814a546afd0d423aed", size = 1448665 },
-    { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/cc/94/eff1ddad2ce1d3cc26c162b3693043c6b6b575f538f602f26fe846dfdc75/black-24.8.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:2b59b250fdba5f9a9cd9d0ece6e6d993d91ce877d121d161e4698af3eb9c1018", size = 1762458 },
-    { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/28/ea/18b8d86a9ca19a6942e4e16759b2fa5fc02bbc0eb33c1b866fcd387640ab/black-24.8.0-cp312-cp312-win_amd64.whl", hash = "sha256:6e55d30d44bed36593c3163b9bc63bf58b3b30e4611e4d88a0c3c239930ed5b2", size = 1436109 },
-    { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/27/1e/83fa8a787180e1632c3d831f7e58994d7aaf23a0961320d21e84f922f919/black-24.8.0-py3-none-any.whl", hash = "sha256:972085c618ee94f402da1af548a4f218c754ea7e5dc70acb168bfaca4c2542ed", size = 206504 },
 ]
 
 [[package]]
@@ -152,7 +124,7 @@ name = "click"
 version = "8.1.7"
 source = { registry = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple" }
 dependencies = [
-    { name = "colorama", marker = "platform_system == 'Windows'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/96/d3/f04c7bfcf5c1862a2a5b845c6b2b360488cf47af55dfa79c98f6a6bf98b5/click-8.1.7.tar.gz", hash = "sha256:ca9853ad459e787e2192211578cc907e7594e294c7ccc834310722b41b9ca6de", size = 336121 }
 wheels = [
@@ -317,20 +289,6 @@ wheels = [
 ]
 
 [[package]]
-name = "flake8"
-version = "7.1.1"
-source = { registry = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple" }
-dependencies = [
-    { name = "mccabe" },
-    { name = "pycodestyle" },
-    { name = "pyflakes" },
-]
-sdist = { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/37/72/e8d66150c4fcace3c0a450466aa3480506ba2cae7b61e100a2613afc3907/flake8-7.1.1.tar.gz", hash = "sha256:049d058491e228e03e67b390f311bbf88fce2dbaa8fa673e7aea87b7198b8d38", size = 48054 }
-wheels = [
-    { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/d9/42/65004373ac4617464f35ed15931b30d764f53cdd30cc78d5aea349c8c050/flake8-7.1.1-py2.py3-none-any.whl", hash = "sha256:597477df7860daa5aa0fdd84bf5208a043ab96b8e96ab708770ae0364dd03213", size = 57731 },
-]
-
-[[package]]
 name = "fonttools"
 version = "4.54.1"
 source = { registry = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple" }
@@ -479,15 +437,6 @@ dependencies = [
 sdist = { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/9b/af/e1ff4d5499165e330413e0fb9811ca937c332d20900eae641cd590c0ab71/ipython-8.18.0.tar.gz", hash = "sha256:4feb61210160f75e229ce932dbf8b719bff37af123c0b985fd038b14233daa16", size = 5486388 }
 wheels = [
     { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/7a/57/ef12725f8af19920db1d8f2eaee44ebbaee6d9fdcf853be5db76bfdb9ce6/ipython-8.18.0-py3-none-any.whl", hash = "sha256:d538a7a98ad9b7e018926447a5f35856113a85d08fd68a165d7871ab5175f6e0", size = 808166 },
-]
-
-[[package]]
-name = "isort"
-version = "5.13.2"
-source = { registry = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple" }
-sdist = { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/87/f9/c1eb8635a24e87ade2efce21e3ce8cd6b8630bb685ddc9cdaca1349b2eb5/isort-5.13.2.tar.gz", hash = "sha256:48fdfcb9face5d58a4f6dde2e72a1fb8dcaf8ab26f95ab49fab84c2ddefb0109", size = 175303 }
-wheels = [
-    { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/d1/b3/8def84f539e7d2289a02f0524b944b15d7c75dab7628bedf1c4f0992029c/isort-5.13.2-py3-none-any.whl", hash = "sha256:8ca5e72a8d85860d5a3fa69b8745237f2939afe12dbf656afbcb47fe72d947a6", size = 92310 },
 ]
 
 [[package]]
@@ -703,15 +652,6 @@ wheels = [
 ]
 
 [[package]]
-name = "mccabe"
-version = "0.7.0"
-source = { registry = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple" }
-sdist = { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/e7/ff/0ffefdcac38932a54d2b5eed4e0ba8a408f215002cd178ad1df0f2806ff8/mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325", size = 9658 }
-wheels = [
-    { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/27/1a/1f68f9ba0c207934b35b86a8ca3aad8395a3d6dd7921c0686e23853ff5a9/mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e", size = 7350 },
-]
-
-[[package]]
 name = "mdurl"
 version = "0.1.2"
 source = { registry = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple" }
@@ -735,7 +675,7 @@ version = "1.6.1"
 source = { registry = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple" }
 dependencies = [
     { name = "click" },
-    { name = "colorama", marker = "platform_system == 'Windows'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
     { name = "ghp-import" },
     { name = "jinja2" },
     { name = "markdown" },
@@ -1098,11 +1038,11 @@ version = "1.3.2"
 source = { registry = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple" }
 dependencies = [
     { name = "cachetools" },
-    { name = "colorama", marker = "platform_system == 'Windows'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
     { name = "nvidia-ml-py" },
     { name = "psutil" },
     { name = "termcolor" },
-    { name = "windows-curses", marker = "platform_system == 'Windows'" },
+    { name = "windows-curses", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/82/c8/a99ef6649e42aaf22953e3ba97cadd735652ab4512c8fc212ea6f6bdee47/nvitop-1.3.2.tar.gz", hash = "sha256:9ea401dfca6b268cf30c041e428f461aab31e4bc5e17bc8e923568e16c9cb1f1", size = 227359 }
 wheels = [
@@ -1278,24 +1218,6 @@ dependencies = [
 sdist = { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/46/9b/fd39836a6397fb363446d83075a7b9c2cc562f4c449292e039ed36084376/pybtex-0.24.0.tar.gz", hash = "sha256:818eae35b61733e5c007c3fcd2cfb75ed1bc8b4173c1f70b56cc4c0802d34755", size = 402879 }
 wheels = [
     { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/ad/5f/40d8e90f985a05133a8895fc454c6127ecec3de8b095dd35bba91382f803/pybtex-0.24.0-py2.py3-none-any.whl", hash = "sha256:e1e0c8c69998452fea90e9179aa2a98ab103f3eed894405b7264e517cc2fcc0f", size = 561354 },
-]
-
-[[package]]
-name = "pycodestyle"
-version = "2.12.1"
-source = { registry = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple" }
-sdist = { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/43/aa/210b2c9aedd8c1cbeea31a50e42050ad56187754b34eb214c46709445801/pycodestyle-2.12.1.tar.gz", hash = "sha256:6838eae08bbce4f6accd5d5572075c63626a15ee3e6f842df996bf62f6d73521", size = 39232 }
-wheels = [
-    { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/3a/d8/a211b3f85e99a0daa2ddec96c949cac6824bd305b040571b82a03dd62636/pycodestyle-2.12.1-py2.py3-none-any.whl", hash = "sha256:46f0fb92069a7c28ab7bb558f05bfc0110dac69a0cd23c61ea0040283a9d78b3", size = 31284 },
-]
-
-[[package]]
-name = "pyflakes"
-version = "3.2.0"
-source = { registry = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple" }
-sdist = { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/57/f9/669d8c9c86613c9d568757c7f5824bd3197d7b1c6c27553bc5618a27cce2/pyflakes-3.2.0.tar.gz", hash = "sha256:1c61603ff154621fb2a9172037d84dca3500def8c8b630657d1701f026f8af3f", size = 63788 }
-wheels = [
-    { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/d4/d7/f1b7db88d8e4417c5d47adad627a93547f44bdc9028372dbd2313f34a855/pyflakes-3.2.0-py2.py3-none-any.whl", hash = "sha256:84b5be138a2dfbb40689ca07e2152deb896a65c3a3e24c251c5c62489568074a", size = 62725 },
 ]
 
 [[package]]
@@ -1696,19 +1618,19 @@ dependencies = [
     { name = "fsspec" },
     { name = "jinja2" },
     { name = "networkx" },
-    { name = "nvidia-cublas-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux'" },
-    { name = "nvidia-cuda-cupti-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux'" },
-    { name = "nvidia-cuda-nvrtc-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux'" },
-    { name = "nvidia-cuda-runtime-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux'" },
-    { name = "nvidia-cudnn-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux'" },
-    { name = "nvidia-cufft-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux'" },
-    { name = "nvidia-curand-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux'" },
-    { name = "nvidia-cusolver-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux'" },
-    { name = "nvidia-cusparse-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux'" },
-    { name = "nvidia-nccl-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux'" },
-    { name = "nvidia-nvtx-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux'" },
+    { name = "nvidia-cublas-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+    { name = "nvidia-cuda-cupti-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+    { name = "nvidia-cuda-nvrtc-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+    { name = "nvidia-cuda-runtime-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+    { name = "nvidia-cudnn-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+    { name = "nvidia-cufft-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+    { name = "nvidia-curand-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+    { name = "nvidia-cusolver-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+    { name = "nvidia-cusparse-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+    { name = "nvidia-nccl-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+    { name = "nvidia-nvtx-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
     { name = "sympy" },
-    { name = "triton", marker = "platform_machine == 'x86_64' and platform_system == 'Linux'" },
+    { name = "triton", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
     { name = "typing-extensions" },
 ]
 wheels = [
@@ -1737,12 +1659,9 @@ dependencies = [
 
 [package.optional-dependencies]
 dev = [
-    { name = "black" },
     { name = "commitizen" },
-    { name = "flake8" },
     { name = "hypothesis" },
     { name = "ipython" },
-    { name = "isort" },
     { name = "mypy" },
     { name = "nvitop" },
     { name = "pre-commit" },
@@ -1770,12 +1689,9 @@ plot = [
 
 [package.metadata]
 requires-dist = [
-    { name = "black", marker = "extra == 'dev'" },
     { name = "commitizen", marker = "extra == 'dev'" },
-    { name = "flake8", marker = "extra == 'dev'" },
     { name = "hypothesis", marker = "extra == 'dev'", specifier = ">=6.112.0" },
     { name = "ipython", marker = "extra == 'dev'" },
-    { name = "isort", marker = "extra == 'dev'" },
     { name = "jaxtyping" },
     { name = "marimo", marker = "extra == 'example'", specifier = ">=0.8.22" },
     { name = "matplotlib", marker = "extra == 'plot'" },
