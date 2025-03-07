@@ -22,11 +22,12 @@ classifiers=[
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Mathematics",
 ]
-requires-python = ">= 3.11,<3.13"
+requires-python = ">= 3.11,<3.14"
 dependencies = [
     "numpy",
     "torch",
@@ -41,10 +42,7 @@ dev = [
     "nvitop",
     "pre-commit",
     "ipython",
-    "black",
-    "flake8",
     "mypy",
-    "isort",
     "ruff",
     "pytest",
     "pytest-cov",

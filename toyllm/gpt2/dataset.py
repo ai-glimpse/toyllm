@@ -62,7 +62,13 @@ class GPTDataloader:
         dataset = GPTDataset(text, self.tokenizer, self.max_length, self.stride)
 
         # Create dataloader
-        dataloader = DataLoader(dataset, batch_size=self.batch_size, shuffle=shuffle, drop_last=drop_last)
+        dataloader = DataLoader(
+            dataset,
+            batch_size=self.batch_size,
+            shuffle=shuffle,
+            drop_last=drop_last,
+            num_workers=4,
+        )
 
         return dataloader
 

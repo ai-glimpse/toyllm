@@ -1,4 +1,4 @@
-# Toy LLM
+# ToyLLM: Learning LLM from Scratch
 
 ## 快速开始
 
