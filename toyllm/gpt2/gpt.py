@@ -9,7 +9,7 @@ from typing import TypeAlias
 
 import jaxtyping
 import torch
-import torch.nn as nn
+from torch import nn
 from typeguard import typechecked as typechecker
 
 from toyllm.gpt2.config import (
@@ -35,9 +35,11 @@ class MultiHeadAttention(nn.Module):
         dropout_rate: float,
         n_heads: int,
         qkv_bias: bool = False,
-    ):
+    ) -> None:
         super().__init__()
-        assert d_out % n_heads == 0, "d_out must be divisible by num_heads"
+        if d_out % n_heads != 0:
+            error_message = "d_out must be divisible by num_heads"
+            raise ValueError(error_message)
 
         self.d_out = d_out
         self.n_heads = n_heads
@@ -90,11 +92,11 @@ class MultiHeadAttention(nn.Module):
         context_vec = context_vec.contiguous().view(batch_size, num_tokens, self.d_out)
         context_vec = self.out_proj(context_vec)  # optional projection
 
-        return context_vec
+        return context_vec  # type: ignore[no-any-return]
 
 
 class LayerNorm(nn.Module):
-    def __init__(self, emb_dim: int):
+    def __init__(self, emb_dim: int) -> None:
         super().__init__()
         self.eps = 1e-5
         self.scale = nn.Parameter(torch.ones(emb_dim))
@@ -109,7 +111,7 @@ class LayerNorm(nn.Module):
 
 
 class GELU(nn.Module):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
     @jaxtyping.jaxtyped(typechecker=typechecker)
@@ -118,7 +120,7 @@ class GELU(nn.Module):
 
 
 class FeedForward(nn.Module):
-    def __init__(self, cfg: GPTModelConfig):
+    def __init__(self, cfg: GPTModelConfig) -> None:
         super().__init__()
         self.layers = nn.Sequential(
             nn.Linear(cfg.emb_dim, 4 * cfg.emb_dim),
@@ -129,11 +131,11 @@ class FeedForward(nn.Module):
 
     @jaxtyping.jaxtyped(typechecker=typechecker)
     def forward(self, x: GPTInnerType) -> GPTInnerType:
-        return self.layers(x)
+        return self.layers(x)  # type: ignore[no-any-return]
 
 
 class TransformerBlock(nn.Module):
-    def __init__(self, cfg: GPTModelConfig):
+    def __init__(self, cfg: GPTModelConfig) -> None:
         super().__init__()
         self.att = MultiHeadAttention(
             d_in=cfg.emb_dim,
@@ -168,10 +170,11 @@ class TransformerBlock(nn.Module):
 
 
 class GPTModel(nn.Module):
-    def __init__(self, model_size: GPTModelSize):
-        """
+    def __init__(self, model_size: GPTModelSize) -> None:
+        """GPT Model.
+
         Args:
-            model_size: Options: SMALL(124M), MEDIUM(355M), LARGE(774M), XLARGE(1558M)
+            model_size: Options: SMALL(124M), MEDIUM(355M), LARGE(774M), XLARGE(1558M).
         """
         super().__init__()
         self.model_size = model_size
@@ -199,7 +202,7 @@ class GPTModel(nn.Module):
         x = self.trf_blocks(x)
         x = self.final_norm(x)
         logits = self.out_head(x)
-        return logits
+        return logits  # type: ignore[no-any-return]
 
     @property
     def device(self) -> torch.device:
@@ -211,8 +214,9 @@ class GPTModel(nn.Module):
     def load(self, model_path: str = "") -> "GPTModel":
         if model_path == "":
             model_path = f"{pathlib.Path(__file__).parents[2]}/models/{self.config.name}.pt"
-        logger.debug(f"Loading model from {model_path}")
+        logger.debug("Loading model from %s", model_path)
         if not pathlib.Path(model_path).exists():
-            raise FileNotFoundError(f"Model file not found: {model_path}")
+            msg = f"Model file not found: {model_path}"
+            raise FileNotFoundError(msg)
         self.load_state_dict(torch.load(model_path, weights_only=True, map_location=self.device))
         return self

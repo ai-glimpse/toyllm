@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 import jaxtyping
 import tiktoken
@@ -19,7 +18,7 @@ class GPTTextGenerator:
         gpt_model: GPTModel,
         tokenizer: tiktoken.Encoding = gpt2_tokenizer,
         seed: int = 42,
-    ):
+    ) -> None:
         self.tokenizer = tokenizer
         self.seed = seed
         self.gpt_model = self.__load_gpt_model(gpt_model)
@@ -40,14 +39,16 @@ class GPTTextGenerator:
         self,
         prompt: str,
         max_gen_tokens: int = 10,
-        top_k: Optional[int] = None,
-        temperature: Optional[float] = None,
+        top_k: int | None = None,
+        temperature: float | None = None,
     ) -> str:
-        """
+        """The GPT2 model generates text based on the given prompt.
+
         Args:
             prompt: prompt text
             max_gen_tokens: maximum number of tokens to generate
-            top_k: only keep `top_k`(logits) candidate tokens to select from. A little `top_k` will reduce the randomness of generated output.`top_k` must be greater than 0, like 5, 10 and so on.
+            top_k: only keep `top_k`(logits) candidate tokens to select from. A little `top_k` will reduce the
+            randomness of generated output.`top_k` must be greater than 0, like 5, 10 and so on.
             temperature: "Temperatures greater than 1 will result in more uniformly distributed token probabilities
             after applying the softmax; temperatures smaller than 1 will result in
             more confident (sharper or more peaky) distributions after applying the softmax"
@@ -93,8 +94,7 @@ class GPTTextGenerator:
             prompt_tokens = torch.cat((prompt_tokens, next_token_id), dim=1)
 
         generate_text = token_ids_to_text(prompt_tokens)
-
-        return generate_text
+        return generate_text  # type: ignore[no-any-return]
 
     @jaxtyping.jaxtyped(typechecker=typechecker)
     @staticmethod
@@ -102,10 +102,11 @@ class GPTTextGenerator:
         logits: jaxtyping.Float[torch.Tensor, "batch_size vocab_size"],
         top_k: int,
     ) -> jaxtyping.Float[torch.Tensor, "batch_size vocab_size"]:
-        """
+        """The top-k filtering method is used to prevent the model from considering tokens with low probabilities.
+
         ref1: https://github.com/rasbt/LLMs-from-scratch/blob/62fb11d5e0449a6d49bda7337d6cfa5a735718da/ch05/01_main-chapter-code/generate.py#L166-L185
         ref2: https://github.com/huggingface/transformers/blob/c4d4e8bdbd25d9463d41de6398940329c89b7fb6/src/transformers/generation_utils.py#L903-L941
-        ref3: https://github.com/meta-llama/llama/blob/main/llama/generation.py#L188-L192
+        ref3: https://github.com/meta-llama/llama/blob/main/llama/generation.py#L188-L192.
         """
         top_k = min(top_k, logits.size(-1))  # make sure top_k <= vocab size
         top_k_logits, _top_k_indexes = torch.topk(logits, k=top_k, dim=-1)

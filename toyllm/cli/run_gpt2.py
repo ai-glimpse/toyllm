@@ -9,7 +9,7 @@ def main(
     prompt: str = "Alan Turing theorized that computers would one day become",
     model_size: GPTModelSize = GPTModelSize.SMALL,
     max_gen_tokens: int = 40,
-):
+) -> None:
     gpt_model = GPTModel(model_size).load()
     text_generator = GPTTextGenerator(gpt_model=gpt_model)
 
@@ -20,7 +20,7 @@ def main(
     )
     print(generate_text)
     end_time = time.time()
-    print("Time elapsed: {:.2f}s".format(end_time - start_time))
+    print(f"Time elapsed: {end_time - start_time:.2f}s")
 
 
 if __name__ == "__main__":

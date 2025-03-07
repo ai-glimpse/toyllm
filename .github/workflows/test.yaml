@@ -23,16 +23,25 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-          cache-dependency-glob: "uv.lock"
+          # Adding cache-dependency-path for better cache invalidation
+          cache-dependency-path: |
+            pyproject.toml
+          cache-key: ${{ runner.os }}-${{ matrix.python-version }}-uv
 
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
+
       - name: Install the project
         run: uv sync --all-extras --dev
 
+      - name: Lint with Mypy
+        run: uv run mypy .
+
+      - name: Lint with Ruff
+        run: uv run ruff check
+
       - name: Run tests and generate coverage report
         run: uv run pytest --doctest-modules -v --cov=toyllm --junitxml=junit.xml -o junit_family=legacy --cov-fail-under 0 --cov-report=term --cov-report=xml --cov-report=html toyllm tests
-
 
       - name: Upload test results to Codecov
         if: success() && matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
