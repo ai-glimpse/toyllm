@@ -18,21 +18,34 @@ jobs:
       UV_HTTP_TIMEOUT: 900 # max 15min to install deps
     steps:
       - uses: actions/checkout@v4
+
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-          cache-dependency-glob: "uv.lock"
+          # Changed from uv.lock to requirements.txt as this is more common
+          cache-dependency-path: |
+            pyproject.toml
+
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
+
+      # Generate a lockfile for caching
+      - name: Generate lockfile
+        run: uv pip compile --output-file uv.lock pyproject.toml
+
       - name: Install the project
-        run: uv sync --all-extras --dev
+        run: uv sync --all-extras --dev --lockfile uv.lock
+
       - name: Lint with Mypy
         run: uv run mypy .
+
       - name: Lint with Ruff
         run: uv run ruff check
+
       - name: Run tests and generate coverage report
         run: uv run pytest --doctest-modules -v --cov=toyllm --junitxml=junit.xml -o junit_family=legacy --cov-fail-under 0 --cov-report=term --cov-report=xml --cov-report=html toyllm tests
+
       - name: Upload test results to Codecov
         if: success() && matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
         uses: codecov/test-results-action@v1
