@@ -37,7 +37,9 @@ class MultiHeadAttention(nn.Module):
         qkv_bias: bool = False,
     ) -> None:
         super().__init__()
-        assert d_out % n_heads == 0, "d_out must be divisible by num_heads"
+        if d_out % n_heads != 0:
+            error_message = "d_out must be divisible by num_heads"
+            raise ValueError(error_message)
 
         self.d_out = d_out
         self.n_heads = n_heads
