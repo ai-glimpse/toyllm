@@ -10,14 +10,21 @@ def main(
     prompt: str = "Alan Turing theorized that computers would one day become",
     model_size: GPTModelSize = GPTModelSize.SMALL,
     max_new_tokens: int = 40,
+    top_k: int | None = None,
+    temperature: float = 1.0,
 ) -> None:
+    """Generate text using GPT-2 model."""
     gpt_model = GPTModel(model_size).load()
     text_generator = GPTTextGenerator(gpt_model=gpt_model)
 
     start_time = time.time()
     generate_text = text_generator.generate(
         prompt=prompt,
-        config=GenerationConfig(max_new_tokens=max_new_tokens),
+        config=GenerationConfig(
+            max_new_tokens=max_new_tokens,
+            top_k=top_k,
+            temperature=temperature,
+        ),
     )
     print(generate_text)
     end_time = time.time()
