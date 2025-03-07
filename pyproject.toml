@@ -129,6 +129,9 @@ target-version = "py311"
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
+    # https://docs.kidger.site/jaxtyping/faq/#flake8-or-ruff-are-throwing-an-error
+    "F722",   # jaxtyping doc said it's ok to disable this
+
     "FBT001",  # Boolean-typed positional argument in function definition
     "FBT002",  # Boolean default positional argument in function definition
     "D100",   # Missing docstring in public module
@@ -149,8 +152,6 @@ pydocstyle = { convention = "google" }
 
 [tool.ruff.lint.per-file-ignores]
 'playground/glimpse/top-down/*' = ["ALL"]
-# https://docs.kidger.site/jaxtyping/faq/#flake8-or-ruff-are-throwing-an-error
-'toyllm/gpt2/*' = ["F722"]  # jaxtyping doc said it's ok to disable this
 'tests/*' = [
     "S101", # assert
 ]
