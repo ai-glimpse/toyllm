@@ -23,19 +23,20 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-          # Changed from uv.lock to requirements.txt as this is more common
+          # Adding cache-dependency-path for better cache invalidation
           cache-dependency-path: |
             pyproject.toml
+          cache-key: ${{ runner.os }}-${{ matrix.python-version }}-uv
 
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
 
-      # Generate a lockfile for caching
+      # Generate proper lockfile with uv lock command
       - name: Generate lockfile
-        run: uv pip compile --output-file uv.lock pyproject.toml
+        run: uv lock
 
       - name: Install the project
-        run: uv sync --all-extras --dev --lockfile uv.lock
+        run: uv pip install --no-deps -e ".[dev,all]"
 
       - name: Lint with Mypy
         run: uv run mypy .
