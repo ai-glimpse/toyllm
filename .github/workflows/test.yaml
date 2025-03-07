@@ -31,12 +31,8 @@ jobs:
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
 
-      # Generate proper lockfile with uv lock command
-      - name: Generate lockfile
-        run: uv lock
-
       - name: Install the project
-        run: uv pip install --no-deps -e ".[dev,all]"
+        run: uv sync --all-extras --dev
 
       - name: Lint with Mypy
         run: uv run mypy .
