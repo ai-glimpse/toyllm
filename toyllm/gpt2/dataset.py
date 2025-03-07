@@ -57,7 +57,7 @@ class GPTDataloader:
         self.stride = stride
         self.batch_size = batch_size
 
-    def create_dataloader(self, text: str, shuffle: bool = True, drop_last: bool = True) -> DataLoader:  # type: ignore[no-untyped-def,type-arg]
+    def create_dataloader(self, text: str, shuffle: bool = True, drop_last: bool = True) -> DataLoader:  # type: ignore[type-arg]
         # Create dataset
         dataset = GPTDataset(text, self.tokenizer, self.max_length, self.stride)
 
