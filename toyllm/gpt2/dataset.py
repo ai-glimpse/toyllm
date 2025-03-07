@@ -51,11 +51,13 @@ class GPTDataloader:
         max_length: int,
         stride: int,
         batch_size: int,
+        num_workers: int = 4,
     ) -> None:
         self.tokenizer = tokenizer
         self.max_length = max_length
         self.stride = stride
         self.batch_size = batch_size
+        self.num_workers = num_workers
 
     def create_dataloader(self, text: str, shuffle: bool = True, drop_last: bool = True) -> DataLoader:  # type: ignore[type-arg]
         # Create dataset
@@ -67,7 +69,7 @@ class GPTDataloader:
             batch_size=self.batch_size,
             shuffle=shuffle,
             drop_last=drop_last,
-            num_workers=4,
+            num_workers=self.num_workers,
         )
 
         return dataloader
