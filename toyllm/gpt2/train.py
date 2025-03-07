@@ -10,6 +10,7 @@ import tiktoken
 import torch
 from torch.utils.data import DataLoader
 
+from toyllm.core import GenerationConfig
 from toyllm.device import current_device
 from toyllm.gpt2.config import GPTModelSize, GPTTrainingConfig
 from toyllm.gpt2.dataset import GPTDataloader
@@ -70,7 +71,14 @@ def evaluate_model(
 def generate_and_print_sample(model: GPTModel, tokenizer: tiktoken.Encoding, start_context: str) -> None:
     model.eval()
     text_generate = GPTTextGenerator(gpt_model=model, tokenizer=tokenizer)
-    generate_text = text_generate.generate(prompt=start_context, max_gen_tokens=50, temperature=0.9, top_k=10)
+    generate_text = text_generate.generate(
+        prompt=start_context,
+        config=GenerationConfig(
+            max_new_tokens=50,
+            temperature=0.9,
+            top_k=10,
+        ),
+    )
     print(generate_text.replace("\n", " "))  # Compact print format
     model.train()
 
