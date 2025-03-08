@@ -23,7 +23,7 @@ class BaseSpsModel(ABC):
     @staticmethod
     def logits_to_probs(logits: torch.Tensor, config: GenerationConfig) -> torch.Tensor:
         if config.top_k is not None:
-            logits = logits_top_k_filter(logits, k=config.top_k)
+            logits = logits_top_k_filter(logits, top_k=config.top_k)
         if config.temperature is not None:
             logits = logits_temperature_scale(logits, temperature=config.temperature)
         return torch.softmax(logits, dim=-1)
