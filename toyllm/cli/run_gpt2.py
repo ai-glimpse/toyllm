@@ -11,9 +11,9 @@ def main(
     model_size: GPTModelSize = GPTModelSize.SMALL,
     max_new_tokens: int = 40,
     top_k: int | None = None,
-    temperature: float = 1.0,
+    temperature: float | None = None,
 ) -> None:
-    """Generate text using GPT-2 model."""
+    """Generate text using a GPT-2 model."""
     gpt_model = GPTModel(model_size).load()
     text_generator = GPTTextGenerator(gpt_model=gpt_model)
 
