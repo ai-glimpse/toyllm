@@ -4,6 +4,7 @@ import numpy as np
 import tiktoken
 import torch
 
+from toyllm.core import GenerationConfig
 from toyllm.sps.models import BaseSpsModel
 
 
@@ -20,21 +21,25 @@ class SpsTextGenerator:
 
     def generate(
         self,
-        prompt: str,  # given initial prompt
-        target_seq_len: int = 100,
-        temperature: None | float = None,
+        prompt: str,
+        config: GenerationConfig | None = None,
     ) -> str:
         """Generate text using Speculative Sampling.
 
         Args:
-        prompt: Prompt text
-        target_seq_len: The `T` in paper.
-        The target sequence length to generate.
-        temperature: Used to control the randomness of the generated text.
+            prompt: Prompt text
+            config: Generation configuration
         """
+        if config is None:
+            config = GenerationConfig()
+        print(config)
+
         # sequence x0, x1, ..., xt
         text_id_list = self.tokenizer.encode(prompt)
         prompt_tokens = torch.tensor(text_id_list).to(self.target_model.device())
+
+        # The `T` in paper
+        target_seq_len = config.max_new_tokens + len(prompt_tokens)
 
         # Initialise n <- t
         n = prompt_tokens.size(0)
@@ -45,7 +50,7 @@ class SpsTextGenerator:
                 # for t = 1:K do
                 #   Sample draft auto-regressively x'_t ~ p(x|x1, ..., xn, x'_1, ..., x'_{t-1})
                 for _ in range(self.lookahead):
-                    draft_model_probs = self.draft_model.forward(draft_prompt_tokens, temperature)
+                    draft_model_probs = self.draft_model.inference(draft_prompt_tokens, config)
                     next_token_id = torch.multinomial(draft_model_probs[-1], num_samples=1)
                     draft_prompt_tokens = torch.cat([draft_prompt_tokens, next_token_id], dim=0)
 
@@ -55,7 +60,7 @@ class SpsTextGenerator:
 
                 # compute k+1 sets of logits from drafts x'_1, ..., x'_K
                 # target 模型另外考虑最后一个 token 的预测，用于 All accept 时推断出下一个 token
-                target_model_probs = self.target_model.forward(draft_prompt_tokens, temperature)
+                target_model_probs = self.target_model.inference(draft_prompt_tokens, config)
                 target_model_probs = target_model_probs[-(self.lookahead + 1) :, :]
 
                 all_accept = True
