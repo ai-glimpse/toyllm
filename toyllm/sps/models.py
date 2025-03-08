@@ -9,7 +9,7 @@ from toyllm.gpt2 import GPTModel, GPTModelSize
 
 class BaseSpsModel(ABC):
     @abstractmethod
-    def forward(
+    def inference(
         self,
         prompt_token: torch.Tensor,
         config: GenerationConfig,
@@ -20,7 +20,8 @@ class BaseSpsModel(ABC):
     def device(self) -> torch.device:
         raise NotImplementedError
 
-    def logits_to_probs(self, logits: torch.Tensor, config: GenerationConfig) -> torch.Tensor:
+    @staticmethod
+    def logits_to_probs(logits: torch.Tensor, config: GenerationConfig) -> torch.Tensor:
         if config.top_k is not None:
             logits = logits_top_k_filter(logits, k=config.top_k)
         if config.temperature is not None:
@@ -35,7 +36,7 @@ class GPTSpsModel(BaseSpsModel):
         if self.gpt_model.device != current_device:
             self.gpt_model.to(current_device)
 
-    def forward(
+    def inference(
         self,
         prompt_token: torch.Tensor,
         config: GenerationConfig,

@@ -53,7 +53,7 @@ class GPTTextGenerator:
 
         for _ in range(config.max_new_tokens):
             # Crop current context if it exceeds the supported context size(ctx_len)
-            # E.g., if LLM supports only 5 tokens, and the context size is 10
+            # E.g., if LLM supports only 5 tokens, and the context size is 10,
             # then only the last 5 tokens are used as context
 
             # (batch, n_tokens) --(crop context)--> (batch, n_tokens' = min(ctx_len, n_tokens))
@@ -73,7 +73,8 @@ class GPTTextGenerator:
             if config.top_k is not None:
                 logits = logits_top_k_filter(logits, config.top_k)
             if config.temperature is not None:
-                probs = logits_temperature_scale(logits, config.temperature)
+                logits = logits_temperature_scale(logits, config.temperature)
+                probs = torch.softmax(logits, dim=-1)
                 # Sample from the scaled multinomial distribution
                 # (batch, vocab_size)--(keep the max prob token)--> (batch, 1)
                 next_token_id = torch.multinomial(probs, num_samples=1)

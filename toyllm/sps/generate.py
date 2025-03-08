@@ -32,6 +32,7 @@ class SpsTextGenerator:
         """
         if config is None:
             config = GenerationConfig()
+        print(config)
 
         # sequence x0, x1, ..., xt
         text_id_list = self.tokenizer.encode(prompt)
@@ -49,7 +50,7 @@ class SpsTextGenerator:
                 # for t = 1:K do
                 #   Sample draft auto-regressively x'_t ~ p(x|x1, ..., xn, x'_1, ..., x'_{t-1})
                 for _ in range(self.lookahead):
-                    draft_model_probs = self.draft_model.forward(draft_prompt_tokens, config)
+                    draft_model_probs = self.draft_model.inference(draft_prompt_tokens, config)
                     next_token_id = torch.multinomial(draft_model_probs[-1], num_samples=1)
                     draft_prompt_tokens = torch.cat([draft_prompt_tokens, next_token_id], dim=0)
 
@@ -59,7 +60,7 @@ class SpsTextGenerator:
 
                 # compute k+1 sets of logits from drafts x'_1, ..., x'_K
                 # target 模型另外考虑最后一个 token 的预测，用于 All accept 时推断出下一个 token
-                target_model_probs = self.target_model.forward(draft_prompt_tokens, config)
+                target_model_probs = self.target_model.inference(draft_prompt_tokens, config)
                 target_model_probs = target_model_probs[-(self.lookahead + 1) :, :]
 
                 all_accept = True
