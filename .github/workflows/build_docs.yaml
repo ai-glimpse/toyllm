@@ -43,5 +43,8 @@ jobs:
         run: uv run mkdocs build
 
       - name: Deploy docs
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12' && github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: uv run mkdocs gh-deploy --force
+
+      - name: Minimize uv cache
+        run: uv cache prune --ci
