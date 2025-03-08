@@ -16,9 +16,9 @@ class GenerationConfig:
         if self.max_new_tokens <= 0:
             msg = "max_new_tokens must be a positive integer."
             raise ValueError(msg)
-        if self.top_k is not None and self.top_k <= 0:
+        if self.top_k is not None and self.top_k < 0:
             msg = "top_k must be a positive integer."
             raise ValueError(msg)
-        if self.temperature is not None and self.temperature <= 0:
-            msg = "temperature must be a positive float."
+        if self.temperature is not None and not (0.0 <= self.temperature <= 1.0):
+            msg = "temperature must be a float between 0.0 and 1.0."
             raise ValueError(msg)

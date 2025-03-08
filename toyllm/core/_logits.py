@@ -29,7 +29,13 @@ def logits_temperature_scale(
     temperature: float | None = None,
     eps: float = 1e-10,
 ) -> jaxtyping.Float[torch.Tensor, "batch_size vocab_size"]:
-    """The temperature scaling method is used to control the randomness of the generated text."""
+    """The temperature scaling method is used to control the randomness of the generated text.
+
+    Note:
+        - A higher temperature value leads to more randomness.
+        - A lower temperature value leads to less randomness.
+        - `None` temperature value means no scaling, while 0.0 means no randomness.
+    """
     if temperature is None:
         return logits
     logits = logits / torch.clip(torch.tensor(temperature, dtype=logits.dtype), min=eps, max=1.0)

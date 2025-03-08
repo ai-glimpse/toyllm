@@ -10,9 +10,16 @@ from toyllm.util import Timer
 def main(
     prompt_text: str = "Alan Turing theorized that computers would one day become",
     max_new_tokens: int = 256,
+    temperature: float = 0.0,
+    top_k: int | None = None,
     k: int = 4,  # K in sps paper
 ) -> None:
-    generate_config = GenerationConfig(max_new_tokens=max_new_tokens)
+    """Generate text using a GPT-2 model and a Speculative Sampling model."""
+    generate_config = GenerationConfig(
+        max_new_tokens=max_new_tokens,
+        temperature=temperature,
+        top_k=top_k,
+    )
 
     console = Console()
     console.print(f"Prompt: {prompt_text}", style="bold blue")
