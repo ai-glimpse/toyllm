@@ -1,10 +1,8 @@
 import time
 
-import typer
-
 from toyllm.core import GenerationConfig
-from toyllm.gpt2 import GPTModel, GPTModelSize
-from toyllm.gpt2_kv.generate import GPTTextGenerator
+from toyllm.gpt2 import GPTModelSize
+from toyllm.gpt2_kv import GPTKVModel, GPTTextGenerator
 
 
 def main(
@@ -15,7 +13,7 @@ def main(
     temperature: float | None = None,
 ) -> None:
     """Generate text using a GPT-2 model."""
-    gpt_model = GPTModel(model_size).load()
+    gpt_model = GPTKVModel(model_size).load()
     text_generator = GPTTextGenerator(gpt_model=gpt_model)
 
     start_time = time.time()
@@ -33,4 +31,5 @@ def main(
 
 
 if __name__ == "__main__":
-    typer.run(main)
+    # typer.run(main)
+    main()

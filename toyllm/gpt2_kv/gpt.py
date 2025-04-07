@@ -189,7 +189,7 @@ class TransformerBlock(nn.Module):
         return x
 
 
-class GPTModel(nn.Module):
+class GPTKVModel(nn.Module):
     def __init__(self, model_size: GPTModelSize) -> None:
         """GPT Model.
 
@@ -231,7 +231,7 @@ class GPTModel(nn.Module):
     def save(self) -> None:
         torch.save(self.state_dict(), f"{self.config.name}.pt")
 
-    def load(self, model_path: str = "") -> "GPTModel":
+    def load(self, model_path: str = "") -> "GPTKVModel":
         if model_path == "":
             model_path = f"{pathlib.Path(__file__).parents[2]}/models/{self.config.name}.pt"
         logger.debug("Loading model from %s", model_path)
