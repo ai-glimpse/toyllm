@@ -5,8 +5,8 @@ import torch
 
 from toyllm.core import GenerationConfig, logits_temperature_scale, logits_top_k_filter
 from toyllm.device import current_device
-from toyllm.gpt2.gpt import GPTModel
 from toyllm.gpt2.tokenizer import gpt2_tokenizer, text_to_token_ids, token_ids_to_text
+from toyllm.gpt2_kv.gpt import GPTKVModel
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class GPTTextGenerator:
     def __init__(
         self,
-        gpt_model: GPTModel,
+        gpt_model: GPTKVModel,
         tokenizer: tiktoken.Encoding = gpt2_tokenizer,
         seed: int = 42,
     ) -> None:
@@ -22,7 +22,7 @@ class GPTTextGenerator:
         self.seed = seed
         self.gpt_model = self.__load_gpt_model(gpt_model)
 
-    def __load_gpt_model(self, gpt_model: GPTModel) -> GPTModel:
+    def __load_gpt_model(self, gpt_model: GPTKVModel) -> GPTKVModel:
         torch.manual_seed(self.seed)
         # disable dropout and so on
         gpt_model.eval()
