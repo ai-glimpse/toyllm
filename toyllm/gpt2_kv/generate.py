@@ -52,15 +52,7 @@ class GPTTextGenerator:
         prompt_tokens = text_to_token_ids(prompt, self.tokenizer).to(self.gpt_model.device)
 
         prev_pos = 0
-        for cur_pos in range(prompt_tokens.shape[1], config.max_new_tokens):
-            # Crop current context if it exceeds the supported context size(ctx_len)
-            # E.g., if LLM supports only 5 tokens, and the context size is 10,
-            # then only the last 5 tokens are used as context
-
-            # (batch, n_tokens) --(crop context)--> (batch, n_tokens' = min(ctx_len, n_tokens))
-            # context_text_token_ids = prompt_tokens[:, -self.context_length :]
-            # model_input_tokens = context_text_token_ids
-
+        for cur_pos in range(prompt_tokens.shape[1], prompt_tokens.shape[1] + config.max_new_tokens):
             model_input_tokens = prompt_tokens[:, prev_pos:cur_pos]
             print(cur_pos, token_ids_to_text(model_input_tokens))
 
@@ -68,7 +60,7 @@ class GPTTextGenerator:
             # use `inference_mode` rather than `no_grad`(https://stackoverflow.com/questions/74191070)
             with torch.inference_mode():
                 # (batch, n_token') --(forward)--> (batch, n_token', vocab_size)
-                logits = self.gpt_model(model_input_tokens)
+                logits = self.gpt_model(model_input_tokens, prev_pos)
 
             # Focus only on the last time step
             # (batch, n_tokens', vocab_size) --(keep last time step token)--> (batch, vocab_size)
