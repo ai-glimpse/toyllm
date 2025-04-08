@@ -3,7 +3,7 @@ junit.xml
 
 # torch
 *.pt
-models/*
+models
 *.pdf
 
 # ide cache

@@ -54,7 +54,7 @@ class GPTTextGenerator:
         prev_pos = 0
         for cur_pos in range(prompt_tokens.shape[1], prompt_tokens.shape[1] + config.max_new_tokens):
             model_input_tokens = prompt_tokens[:, prev_pos:cur_pos]
-            print(cur_pos, token_ids_to_text(model_input_tokens))
+            # print(cur_pos, token_ids_to_text(model_input_tokens))
 
             # Get the predictions
             # use `inference_mode` rather than `no_grad`(https://stackoverflow.com/questions/74191070)
