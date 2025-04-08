@@ -43,7 +43,7 @@ class KVCache(nn.Module):
 
     @property
     def size(self) -> int:
-        return self.cache_pos[0].item()
+        return self.cache_pos[0].item()  # type: ignore[no-any-return]
 
     def update(self, k_val: torch.Tensor, v_val: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         """Update KV cache with the new ``k_val``, ``v_val`` and return the updated cache.
