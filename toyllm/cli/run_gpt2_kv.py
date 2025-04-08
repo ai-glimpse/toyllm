@@ -1,5 +1,7 @@
 import time
 
+import typer
+
 from toyllm.core import GenerationConfig
 from toyllm.gpt2 import GPTModelSize
 from toyllm.gpt2_kv import GPTKVModel, GPTTextGenerator
@@ -31,5 +33,4 @@ def main(
 
 
 if __name__ == "__main__":
-    # typer.run(main)
-    main()
+    typer.run(main)
