@@ -219,11 +219,8 @@ def main(
     # Save benchmark configuration to a file
     with open(output_path / "benchmark_config.txt", "w") as f:
         f.write("# GPT-2 KV Cache Benchmark\n")
-        f.write(f"# Date: {CURRENT_TIME} UTC\n")
-        f.write(f"# User: {CURRENT_USER}\n\n")
         f.write(f"Model sizes: {[size.name for size in model_sizes]}\n")
         f.write(f"Token lengths: {max_new_tokens_list}\n")
-        f.write(f"Benchmark started: {CURRENT_TIME}\n")
 
     # Summary table to be updated after each pair
     summary_table = Table(title="Benchmark Results Summary", box=box.ROUNDED)
