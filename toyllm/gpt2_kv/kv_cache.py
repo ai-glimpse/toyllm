@@ -1,3 +1,4 @@
+# Copyright 2025 Xiangzhuang Shen
 # Copyright (c) Meta Platforms, Inc. and affiliates.
 # All rights reserved.
 #
@@ -32,18 +33,18 @@ class KVCache(nn.Module):
         cache_shape = (batch_size, num_kv_heads, max_seq_len, head_dim)
         self.register_buffer("k_cache", torch.zeros(cache_shape, dtype=dtype), persistent=False)
         self.register_buffer("v_cache", torch.zeros(cache_shape, dtype=dtype), persistent=False)
-        self.register_buffer("cache_pos", torch.arange(0, cache_shape[2]), persistent=False)
         self.batch_size = batch_size
+        self.cache_pos = 0
 
     def reset(self) -> None:
         """Reset the cache to zero."""
         self.k_cache.zero_()
         self.v_cache.zero_()
-        self.cache_pos -= self.size
+        self.cache_pos = 0
 
     @property
     def size(self) -> int:
-        return self.cache_pos[0].item()  # type: ignore[no-any-return]
+        return self.cache_pos
 
     def update(self, k_val: torch.Tensor, v_val: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         """Update KV cache with the new ``k_val``, ``v_val`` and return the updated cache.
@@ -89,20 +90,14 @@ class KVCache(nn.Module):
                 f", but found new key tensors with batch size {k_val.shape[0]}!"
             )
 
-        assert (self.cache_pos[0] + seq_len) <= self.k_cache.shape[2]  # noqa: S101
+        assert (self.cache_pos + seq_len) <= self.k_cache.shape[2]  # noqa: S101
         k_out = self.k_cache
         v_out = self.v_cache
 
-        k_out[:, :, self.cache_pos[:seq_len]] = k_val
-        v_out[:, :, self.cache_pos[:seq_len]] = v_val
+        k_out[:, :, self.cache_pos : self.cache_pos + seq_len] = k_val
+        v_out[:, :, self.cache_pos : self.cache_pos + seq_len] = v_val
 
         # forward cache_pos seq_len positions along
-        # cache_pos starts at (0, 1, 2, 3, 4, 5, ...)
-        # an update of seq_len = 5 tokens brings it to
-        # (5, 6, 7, 8, 9, ...)
-        # this allows us to track the current position in the cache
-        # after the last update in a compile-friendly way without any dynamism
-        # e.g. relying on an int size tracker, or re-creating cache_pos every time
-        self.cache_pos.add_(seq_len)
+        self.cache_pos += seq_len
 
         return k_out, v_out
