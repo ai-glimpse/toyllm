@@ -17,14 +17,8 @@ from toyllm.gpt2 import GPTTextGenerator as NaiveGPTTextGenerator
 from toyllm.gpt2_kv import GPTKVModel
 from toyllm.gpt2_kv import GPTKVTextGenerator
 
-# User and timestamp information
-CURRENT_TIME = "2025-04-08 15:44:45"
-CURRENT_USER = "shenxiangzhuang"
-
 console = Console()
 console.print("[bold]GPT-2 KV Cache Benchmark[/bold]")
-console.print(f"Date: {CURRENT_TIME} UTC")
-console.print(f"User: {CURRENT_USER}")
 
 
 def cleanup_gpu_memory():
