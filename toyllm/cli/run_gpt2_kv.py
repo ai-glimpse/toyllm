@@ -4,7 +4,7 @@ import typer
 
 from toyllm.core import GenerationConfig
 from toyllm.gpt2 import GPTModelSize
-from toyllm.gpt2_kv import GPTKVModel, GPTKVTextGenerator
+from toyllm.gpt2kv import GPTKVModel, GPTKVTextGenerator
 
 
 def main(

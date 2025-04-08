@@ -14,8 +14,8 @@ from rich.table import Table
 from toyllm.core import GenerationConfig
 from toyllm.gpt2 import GPTModel, GPTModelSize
 from toyllm.gpt2 import GPTTextGenerator as NaiveGPTTextGenerator
-from toyllm.gpt2_kv import GPTKVModel
-from toyllm.gpt2_kv import GPTKVTextGenerator
+from toyllm.gpt2kv import GPTKVModel
+from toyllm.gpt2kv import GPTKVTextGenerator
 
 console = Console()
 console.print("[bold]GPT-2 KV Cache Benchmark[/bold]")

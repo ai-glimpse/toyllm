@@ -6,7 +6,7 @@ import torch
 from toyllm.core import GenerationConfig, logits_temperature_scale, logits_top_k_filter
 from toyllm.device import current_device
 from toyllm.gpt2.tokenizer import gpt2_tokenizer, text_to_token_ids, token_ids_to_text
-from toyllm.gpt2_kv.gpt import GPTKVModel
+from toyllm.gpt2kv.gpt import GPTKVModel
 
 logger = logging.getLogger(__name__)
 
