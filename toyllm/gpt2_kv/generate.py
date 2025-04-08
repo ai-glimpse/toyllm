@@ -11,7 +11,7 @@ from toyllm.gpt2_kv.gpt import GPTKVModel
 logger = logging.getLogger(__name__)
 
 
-class GPTTextGenerator:
+class GPTKVTextGenerator:
     def __init__(
         self,
         gpt_model: GPTKVModel,

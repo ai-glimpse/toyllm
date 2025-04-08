@@ -15,7 +15,7 @@ from toyllm.core import GenerationConfig
 from toyllm.gpt2 import GPTModel, GPTModelSize
 from toyllm.gpt2 import GPTTextGenerator as NaiveGPTTextGenerator
 from toyllm.gpt2_kv import GPTKVModel
-from toyllm.gpt2_kv import GPTTextGenerator as KVGPTTextGenerator
+from toyllm.gpt2_kv import GPTKVTextGenerator
 
 # User and timestamp information
 CURRENT_TIME = "2025-04-08 15:44:45"
@@ -72,7 +72,7 @@ def benchmark_generation(
             f"[yellow]Running KV implementation for {model_size.name} with {max_new_tokens} tokens...[/yellow]"
         )
         kv_model = GPTKVModel(model_size).load()
-        kv_generator = KVGPTTextGenerator(gpt_model=kv_model)
+        kv_generator = GPTKVTextGenerator(gpt_model=kv_model)
 
         start_time = time.time()
         kv_generator.generate(
