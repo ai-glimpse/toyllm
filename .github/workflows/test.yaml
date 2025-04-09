@@ -34,7 +34,7 @@ jobs:
       # - name: Install the project
       #   run: uv sync --all-extras --dev
       - name: Install the project
-        run: uv pip install mypy ruff
+        run: uv pip install --system mypy ruff
 
       - name: Lint with Mypy
         run: uv run mypy .
