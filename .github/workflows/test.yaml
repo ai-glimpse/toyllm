@@ -34,7 +34,6 @@ jobs:
       # - name: Install the project
       #   run: uv sync --all-extras --dev
       - name: Install the project
-      - name: Install the project
         run: |
           uv venv -p ${{ matrix.python-version }}
           source .venv/bin/activate
