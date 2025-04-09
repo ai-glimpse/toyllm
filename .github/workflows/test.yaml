@@ -34,7 +34,7 @@ jobs:
       # - name: Install the project
       #   run: uv sync --all-extras --dev
       - name: Install the project
-        run: uv sync --no-install-project --extra dev
+        run: uv sync --no-install-package torch tiktoken numpy pandas --extra dev
 
       - name: Lint with Mypy
         run: uv run mypy .
