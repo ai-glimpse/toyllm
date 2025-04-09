@@ -38,7 +38,7 @@ jobs:
         run: uv python install ${{ matrix.python-version }}
 
       - name: Install the project
-        run: uv sync --extra docs
+        run: uv sync --no-install-project --extra docs
       - name: Build docs
         run: uv run mkdocs build
 
