@@ -34,10 +34,11 @@ jobs:
       # - name: Install the project
       #   run: uv sync --all-extras --dev
       - name: Install the project
-        runs: |
-          - uv venv -p ${{ matrix.python-version }}
-          - source .venv/bin/activate
-          - uv pip install ruff mypy
+      - name: Install the project
+        run: |
+          uv venv -p ${{ matrix.python-version }}
+          source .venv/bin/activate
+          uv pip install ruff mypy
 
       - name: Lint with Mypy
         run: uv run mypy .
