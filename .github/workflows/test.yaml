@@ -34,7 +34,10 @@ jobs:
       # - name: Install the project
       #   run: uv sync --all-extras --dev
       - name: Install the project
-        run: uv sync --no-install-package torch tiktoken numpy pandas --extra dev
+        runs: |
+          - uv venv -p ${{ matrix.python-version }}
+          - source .venv/bin/activate
+          - uv pip install ruff mypy
 
       - name: Lint with Mypy
         run: uv run mypy .
