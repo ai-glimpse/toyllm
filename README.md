@@ -1,35 +1,104 @@
 # ToyLLM: Learning LLM from Scratch
 
-## 快速开始
+A hands-on educational project for understanding and implementing Large Language Models (LLMs) from scratch. This project provides implementations of GPT-2 and related techniques, making it an excellent resource for learning about transformer architectures and modern language models.
 
-### 环境配置
+## Features
 
-- 推荐使用 UV 安装依赖
-  - 创建虚拟环境：`uv venv -p 3.12`
-  - 激活虚拟环境：`source .venv/bin/activate`
-  - 安装`toyllm`：`uv pip install toyllm`
+### GPT-2 Implementation
+A clean, educational implementation of GPT-2 with type hints, supporting both training and inference.
 
-### 拉取项目 & 下载模型文件
+### Speculative Sampling
+An implementation of speculative sampling for faster inference, featuring configurable draft models and performance benchmarking.
 
-- 拉取本项目到本地
-  - `git clone https://github.com/ai-glimpse/toyllm.git`
-- 安装 LFS: [https://git-lfs.com](https://git-lfs.com)
-- `git lfs install`
-- 下载模型文件
-  - 在`toyllm`的根目录下执行`git clone https://huggingface.co/MathewShen/toyllm-gpt2 models`
-  - 或者直接从[https://huggingface.co/MathewShen/toyllm-gpt2/tree/main](https://huggingface.co/MathewShen/toyllm-gpt2/tree/main)下载模型文件，并放到`toyllm/models`目录下
+### KV Cache Optimization
+A memory-efficient GPT-2 implementation with KV cache optimization for handling longer sequences.
 
-### 运行示例
+## Quick Start
 
-- GPT2：`python toyllm/cli/run_gpt2.py`
-  - `python toyllm/cli/run_gpt2.py --help` 查看参数信息
+### Prerequisites
 
-- Speculative Sampling GPT2: `python toyllm/cli/run_speculative_sampling.py`
-  - `python toyllm/cli/run_speculative_sampling.py --help` 查看参数信息
+- Python 3.11 or 3.12
+- Git and Git LFS (for model files)
+- UV (recommended package manager)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/ai-glimpse/toyllm.git
+   cd toyllm
+   ```
+
+2. Set up the environment:
+   ```bash
+   # Create and activate virtual environment
+   uv venv -p 3.12
+   source .venv/bin/activate
+
+   # Install toyllm
+   uv pip install toyllm
+   ```
+
+3. Download model files:
+   ```bash
+   # Install Git LFS if not already installed
+   git lfs install
+
+   # Download model files
+   git clone https://huggingface.co/MathewShen/toyllm-gpt2 models
+   ```
+
+   Alternatively, you can manually download the model files from [Hugging Face](https://huggingface.co/MathewShen/toyllm-gpt2/tree/main) and place them in the `toyllm/models` directory.
+
+### Usage Examples
+
+#### Basic GPT-2 Inference
+```bash
+python toyllm/cli/run_gpt2.py --help  # View available options
+python toyllm/cli/run_gpt2.py         # Run with default settings
+```
+
+#### KV Cache Optimized GPT-2
+```bash
+python toyllm/cli/run_gpt2_kv.py --help  # View available options
+python toyllm/cli/run_gpt2_kv.py         # Run with default settings
+```
+
+#### Speculative Sampling
+```bash
+python toyllm/cli/run_speculative_sampling.py --help  # View available options
+python toyllm/cli/run_speculative_sampling.py         # Run with default settings
+```
+
+#### Benchmarking
+```bash
+python toyllm/cli/benchmark/bench_gpt2kv.py --help  # View available options
+python toyllm/cli/benchmark/bench_gpt2kv.py         # Run benchmarks
+```
+
+## Project Structure
+
+```
+toyllm/
+├── cli/                    # Command-line interface scripts
+├── gpt2/                   # GPT-2 specific implementations
+├── gpt2_kv/                # KV-cache optimized GPT-2
+├── sps/                    # Speculative sampling implementations
+├── util/                   # Utility functions
+└── models/                 # Model weights and configurations
+```
 
 ## Acknowledgements
 
-The project is highly inspired by the following projects:
+This project is inspired by and builds upon the following excellent resources:
 
 - [rasbt/LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch)
 - [neelnanda-io/TransformerLens](https://github.com/neelnanda-io/TransformerLens)
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+[Add your license information here]
