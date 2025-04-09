@@ -39,9 +39,9 @@ jobs:
 
       - name: Install the project
         run: |
-          - uv venv -p ${{ matrix.python-version }}
-          - source .venv/bin/activate
-          - uv pip install mkdocs mkdocs-material mkdocs-material-extensions mkdocstrings mkdocs-bibtex mkdocstrings-python mkdocs-git-committers-plugin-2>=2.4.1 mkdocs-git-revision-date-localized-plugin>=1.2.9
+          uv venv -p ${{ matrix.python-version }}
+          source .venv/bin/activate
+          uv pip install mkdocs mkdocs-material mkdocs-material-extensions mkdocstrings mkdocs-bibtex mkdocstrings-python mkdocs-git-committers-plugin-2>=2.4.1 mkdocs-git-revision-date-localized-plugin>=1.2.9
 
       - name: Build docs
         run: uv run mkdocs build
