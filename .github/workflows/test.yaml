@@ -31,10 +31,8 @@ jobs:
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
 
-      # - name: Install the project
-      #   run: uv sync --all-extras --dev
       - name: Install the project
-        run: uv sync --extra dev
+        run: uv sync --all-extras --dev
 
       - name: Lint with Mypy
         run: uv run mypy .

@@ -77,8 +77,8 @@ include = ["toyllm*"]
 namespaces = false
 
 
-[tool.uv]
-extra-index-url = ["https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"]
+# [tool.uv]
+# extra-index-url = ["https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"]
 
 
 [tool.mypy]
