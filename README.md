@@ -98,7 +98,3 @@ This project is inspired by and builds upon the following excellent resources:
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-[Add your license information here]
