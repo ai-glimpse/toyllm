@@ -155,6 +155,8 @@ pydocstyle = { convention = "google" }
 
 [tool.ruff.lint.per-file-ignores]
 'playground/glimpse/top-down/*' = ["ALL"]
+'playground/*.ipynb' = ["TRY003", "ANN204", "EM102", "N806"]
+
 'toyllm/cli/benchmark*' = ["ALL"]
 'tests/*' = [
     "S101", # assert
