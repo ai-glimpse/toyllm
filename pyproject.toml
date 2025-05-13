@@ -76,6 +76,7 @@ finetune = [
     "peft>=0.15.2",
     "transformers>=4.51.3",
     "trl>=0.17.0",
+    "wandb>=0.19.11",
 ]
 
 [tool.setuptools]
@@ -158,13 +159,15 @@ ignore = [
     "ERA001", # Found commented-out code
     "PLR0913", #  Too many arguments in function definition
     "RUF003",  # Comment contains ambiguous(FULLWIDTH COMMA)
-    "COM812"
-
+    "COM812",
+    "RUF001",
+    "ANN001"
 ]
 pydocstyle = { convention = "google" }
 
 [tool.ruff.lint.per-file-ignores]
 'playground/glimpse/top-down/*' = ["ALL"]
+'playground/finetune/*' = ["ALL"]
 'playground/*.ipynb' = ["TRY003", "ANN204", "EM102", "N806"]
 
 'toyllm/cli/benchmark*' = ["ALL"]
