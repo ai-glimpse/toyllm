@@ -67,6 +67,9 @@ docs = [
 example = [
     "marimo>=0.8.22",
 ]
+finetune = [
+    "transformers>=4.51.3",
+]
 
 [tool.setuptools]
 zip-safe = true
