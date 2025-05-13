@@ -1,3 +1,6 @@
+# lock files
+uv.lock
+
 # test
 junit.xml
 
