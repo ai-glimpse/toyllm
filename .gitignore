@@ -1,3 +1,9 @@
+# playground: only keep .ipynbs, .py, ignore everything else
+playground/*
+!playground/*.ipynb
+!playground/*.py
+
+
 # lock files
 uv.lock
 
