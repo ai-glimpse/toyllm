@@ -1,3 +1,4 @@
+# Zensical reads this compatibility configuration while MkDocs plugin modules mature.
 site_name: ToyLLM
 repo_url: https://github.com/toy-ai/toyllm
 repo_name: ai-glimpse/toyllm
@@ -108,4 +109,4 @@ plugins:
   - bibtex:
       bib_file: "docs/references.bib"
       csl_file: "docs/ieee.csl"
-      cite_inline: false
+      enable_inline_citations: false

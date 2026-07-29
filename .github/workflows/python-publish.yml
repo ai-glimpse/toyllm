@@ -23,14 +23,14 @@ jobs:
     environment: publish
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v9.0.0
         with:
           enable-cache: true
-          cache-dependency-glob: "uv.lock"
+          cache-dependency-glob: "pyproject.toml"
       - name: "Set up Python"
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7.0.0
         with:
           python-version-file: "pyproject.toml"
 
@@ -40,7 +40,7 @@ jobs:
         run: uv build
       # TODO: Change with `uv publish`
       - name: Publish package
-        uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc
+        uses: pypa/gh-action-pypi-publish@ba38be9e461d3875417946c167d0b5f3d385a247 # v1.14.1
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}

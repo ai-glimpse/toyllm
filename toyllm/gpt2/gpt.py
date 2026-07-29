@@ -9,8 +9,8 @@ from typing import TypeAlias
 
 import jaxtyping
 import torch
+from beartype import beartype as typechecker
 from torch import nn
-from typeguard import typechecked as typechecker
 
 from toyllm.gpt2.config import (
     GPTModelConfig,
@@ -50,6 +50,7 @@ class MultiHeadAttention(nn.Module):
         self.W_value = nn.Linear(d_in, d_out, bias=qkv_bias)  # Value Weight
         self.out_proj = nn.Linear(d_out, d_out)  # Linear layer to combine head outputs
         self.dropout = nn.Dropout(dropout_rate)
+        self.mask: torch.Tensor
         self.register_buffer("mask", torch.triu(torch.ones(ctx_len, ctx_len), diagonal=1))
 
     @jaxtyping.jaxtyped(typechecker=typechecker)

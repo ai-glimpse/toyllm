@@ -87,7 +87,7 @@ def train_model_simple(
     model: GPTModel,
     train_loader: DataLoader,  # type: ignore[type-arg]
     val_loader: DataLoader,  # type: ignore[type-arg]
-    optimizer: torch.optim.Optimizer,  # type: ignore[name-defined]
+    optimizer: torch.optim.Optimizer,
     num_epochs: int,
     eval_freq: int,
     eval_iter: int,
@@ -158,7 +158,7 @@ def main(
     # Initialize model
     model = GPTModel(gpt_size)
     model.to(current_device)
-    optimizer = torch.optim.AdamW(  # type: ignore[attr-defined]
+    optimizer = torch.optim.AdamW(
         model.parameters(),
         lr=training_config.learning_rate,
         weight_decay=training_config.weight_decay,

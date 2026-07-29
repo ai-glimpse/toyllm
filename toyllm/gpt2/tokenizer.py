@@ -1,7 +1,7 @@
 import jaxtyping
 import tiktoken
 import torch
-from typeguard import typechecked as typechecker
+from beartype import beartype as typechecker
 
 
 def get_gpt2_tokenizer() -> tiktoken.Encoding:
