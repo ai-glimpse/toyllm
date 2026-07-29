@@ -108,4 +108,4 @@ plugins:
   - bibtex:
       bib_file: "docs/references.bib"
       csl_file: "docs/ieee.csl"
-      cite_inline: false
+      enable_inline_citations: false

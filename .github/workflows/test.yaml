@@ -11,16 +11,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12"]
+        python-version: ["3.14"]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     env:
       UV_HTTP_TIMEOUT: 900 # max 15min to install deps
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v9
         with:
           enable-cache: true
           # Adding cache-dependency-path for better cache invalidation
@@ -44,8 +44,8 @@ jobs:
         run: uv run pytest --doctest-modules -v --cov=toyllm --junitxml=junit.xml -o junit_family=legacy --cov-fail-under 0 --cov-report=term --cov-report=xml --cov-report=html toyllm tests
 
       - name: Upload test results to Codecov
-        if: success() && matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
-        uses: codecov/test-results-action@v1
+        if: success() && matrix.os == 'ubuntu-latest' && matrix.python-version == '3.14'
+        uses: codecov/test-results-action@v1.2.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 

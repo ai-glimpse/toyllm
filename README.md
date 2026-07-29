@@ -17,7 +17,7 @@ A memory-efficient GPT-2 implementation with KV cache optimization for handling 
 
 ### Prerequisites
 
-- Python 3.11 or 3.12
+- Python 3.14
 - Git and Git LFS (for model files)
 - UV (recommended package manager)
 
@@ -32,7 +32,7 @@ A memory-efficient GPT-2 implementation with KV cache optimization for handling 
 2. Set up the environment:
    ```bash
    # Create and activate virtual environment
-   uv venv -p 3.12
+   uv venv -p 3.14
    source .venv/bin/activate
 
    # Install toyllm

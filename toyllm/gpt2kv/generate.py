@@ -87,4 +87,4 @@ class GPTKVTextGenerator:
             prev_pos = cur_pos
 
         generate_text = token_ids_to_text(prompt_tokens)
-        return generate_text  # type: ignore[no-any-return]
+        return generate_text

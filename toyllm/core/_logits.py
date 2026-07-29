@@ -1,6 +1,6 @@
 import jaxtyping
 import torch
-from typeguard import typechecked as typechecker
+from beartype import beartype as typechecker
 
 
 @jaxtyping.jaxtyped(typechecker=typechecker)

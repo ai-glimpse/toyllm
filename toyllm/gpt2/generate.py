@@ -88,4 +88,4 @@ class GPTTextGenerator:
             prompt_tokens = torch.cat((prompt_tokens, next_token_id), dim=1)
 
         generate_text = token_ids_to_text(prompt_tokens)
-        return generate_text  # type: ignore[no-any-return]
+        return generate_text
