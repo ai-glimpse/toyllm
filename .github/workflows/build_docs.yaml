@@ -21,8 +21,6 @@ jobs:
       - name: Configure GitHub Pages
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/configure-pages@v6.0.0
-      - name: Setup pandoc
-        uses: pandoc/actions/setup@v1.1.1
       - uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
@@ -31,9 +29,9 @@ jobs:
       - name: Set up Python 3.14
         run: uv python install 3.14
       - name: Install the project
-        run: uv sync --extra docs
+        run: uv sync --only-group docs
       - name: Build docs with Zensical
-        run: uv run zensical build --clean --strict
+        run: uv run --only-group docs zensical build --clean --strict
       - name: Upload GitHub Pages artifact
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/upload-pages-artifact@v5.0.0

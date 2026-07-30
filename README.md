@@ -31,12 +31,8 @@ A memory-efficient GPT-2 implementation with KV cache optimization for handling 
 
 2. Set up the environment:
    ```bash
-   # Create and activate virtual environment
-   uv venv -p 3.14
-   source .venv/bin/activate
-
-   # Install toyllm
-   uv pip install toyllm
+   # Create the environment and install the project
+   uv sync
    ```
 
 3. Download model files:
@@ -48,44 +44,44 @@ A memory-efficient GPT-2 implementation with KV cache optimization for handling 
    git clone https://huggingface.co/MathewShen/toyllm-gpt2 models
    ```
 
-   Alternatively, you can manually download the model files from [Hugging Face](https://huggingface.co/MathewShen/toyllm-gpt2/tree/main) and place them in the `toyllm/models` directory.
+   Alternatively, you can manually download the model files from [Hugging Face](https://huggingface.co/MathewShen/toyllm-gpt2/tree/main) and place them in the `models` directory.
 
 ### Usage Examples
 
 #### Basic GPT-2 Inference
 ```bash
-python toyllm/cli/run_gpt2.py --help  # View available options
-python toyllm/cli/run_gpt2.py         # Run with default settings
+uv run python -m toyllm.cli.run_gpt2 --help  # View available options
+uv run python -m toyllm.cli.run_gpt2         # Run with default settings
 ```
 
 #### KV Cache Optimized GPT-2
 ```bash
-python toyllm/cli/run_gpt2_kv.py --help  # View available options
-python toyllm/cli/run_gpt2_kv.py         # Run with default settings
+uv run python -m toyllm.cli.run_gpt2_kv --help  # View available options
+uv run python -m toyllm.cli.run_gpt2_kv         # Run with default settings
 ```
 
 #### Speculative Sampling
 ```bash
-python toyllm/cli/run_speculative_sampling.py --help  # View available options
-python toyllm/cli/run_speculative_sampling.py         # Run with default settings
+uv run python -m toyllm.cli.run_speculative_sampling --help  # View available options
+uv run python -m toyllm.cli.run_speculative_sampling         # Run with default settings
 ```
 
 #### Benchmarking
 ```bash
-python toyllm/cli/benchmark/bench_gpt2kv.py --help  # View available options
-python toyllm/cli/benchmark/bench_gpt2kv.py         # Run benchmarks
+uv run python -m toyllm.cli.benchmark.bench_gpt2kv --help  # View available options
+uv run python -m toyllm.cli.benchmark.bench_gpt2kv         # Run benchmarks
 ```
 
 ## Project Structure
 
 ```
-toyllm/
-├── cli/                    # Command-line interface scripts
+src/toyllm/
+├── cli/                    # Command-line interface modules
+├── core/                   # Shared generation primitives
 ├── gpt2/                   # GPT-2 specific implementations
-├── gpt2_kv/                # KV-cache optimized GPT-2
+├── gpt2kv/                 # KV-cache optimized GPT-2
 ├── sps/                    # Speculative sampling implementations
-├── util/                   # Utility functions
-└── models/                 # Model weights and configurations
+└── util/                   # Utility functions
 ```
 
 ## Acknowledgements

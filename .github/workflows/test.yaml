@@ -34,14 +34,11 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
 
-      - name: Lint with Mypy
-        run: uv run mypy .
-
-      - name: Lint with prek
+      - name: Lint and type-check with prek
         run: uv run prek run --all-files
 
       - name: Run tests and generate coverage report
-        run: uv run pytest --doctest-modules -v --cov=toyllm --junitxml=junit.xml -o junit_family=legacy --cov-fail-under 0 --cov-report=term --cov-report=xml --cov-report=html toyllm tests
+        run: uv run pytest --doctest-modules -v --cov=toyllm --junitxml=junit.xml -o junit_family=legacy --cov-fail-under 0 --cov-report=term --cov-report=xml --cov-report=html src/toyllm tests
 
       - name: Upload test results to Codecov
         if: success() && matrix.os == 'ubuntu-latest' && matrix.python-version == '3.14'
