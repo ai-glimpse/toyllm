@@ -23,7 +23,10 @@ def get_data_loaders(
     text: str,
     gpt_data_loader: GPTDataloader,
     train_ratio: float = 0.9,
-) -> tuple[DataLoader, DataLoader]:  # type: ignore[type-arg]
+) -> tuple[
+    DataLoader[tuple[torch.Tensor, torch.Tensor]],
+    DataLoader[tuple[torch.Tensor, torch.Tensor]],
+]:
     # set train/validation split index by train_ratio
     split_idx = int(train_ratio * len(text))
     train_loader = gpt_data_loader.create_dataloader(text=text[:split_idx], drop_last=True, shuffle=True)
@@ -39,7 +42,7 @@ def calc_loss_batch(input_batch: torch.Tensor, target_batch: torch.Tensor, model
 
 
 def calc_loss_loader(
-    data_loader: DataLoader,  # type: ignore[type-arg]
+    data_loader: DataLoader[tuple[torch.Tensor, torch.Tensor]],
     model: GPTModel,
     num_batches: int | None = None,
 ) -> float:
@@ -56,8 +59,8 @@ def calc_loss_loader(
 
 def evaluate_model(
     model: GPTModel,
-    train_loader: DataLoader,  # type: ignore[type-arg]
-    val_loader: DataLoader,  # type: ignore[type-arg]
+    train_loader: DataLoader[tuple[torch.Tensor, torch.Tensor]],
+    val_loader: DataLoader[tuple[torch.Tensor, torch.Tensor]],
     eval_iter: int,
 ) -> tuple[float, float]:
     model.eval()
@@ -85,8 +88,9 @@ def generate_and_print_sample(model: GPTModel, tokenizer: tiktoken.Encoding, sta
 
 def train_model_simple(
     model: GPTModel,
-    train_loader: DataLoader,  # type: ignore[type-arg]
-    val_loader: DataLoader,  # type: ignore[type-arg]
+    train_loader: DataLoader[tuple[torch.Tensor, torch.Tensor]],
+    val_loader: DataLoader[tuple[torch.Tensor, torch.Tensor]],
+    tokenizer: tiktoken.Encoding,
     optimizer: torch.optim.Optimizer,
     num_epochs: int,
     eval_freq: int,
@@ -106,7 +110,7 @@ def train_model_simple(
             optimizer.zero_grad()  # Reset loss gradients from previous epoch
             loss = calc_loss_batch(input_batch, target_batch, model)
             # Calculate loss gradients
-            loss.backward()  # type: ignore[no-untyped-call]
+            loss.backward()
             optimizer.step()  # Update model weights using loss gradients
             tokens_seen += input_batch.numel()
             global_step += 1
@@ -120,7 +124,7 @@ def train_model_simple(
                 print(f"Ep {epoch + 1} (Step {global_step:06d}): Train loss {train_loss:.3f}, Val loss {val_loss:.3f}")
 
         # Print a sample text after each epoch
-        generate_and_print_sample(model, train_loader.dataset.tokenizer, start_context)  # type: ignore[attr-defined]
+        generate_and_print_sample(model, tokenizer, start_context)
 
     return train_losses, val_losses, track_tokens_seen
 
@@ -178,6 +182,7 @@ def main(
         model,
         train_loader,
         val_loader,
+        tokenizer,
         optimizer,
         num_epochs=training_config.num_epochs,
         eval_freq=5,

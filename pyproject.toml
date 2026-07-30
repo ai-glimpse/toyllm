@@ -1,20 +1,19 @@
 [build-system]
-requires = ["setuptools>=83.0.0"]
-build-backend = "setuptools.build_meta"
+requires = ["uv_build>=0.11.26,<0.12"]
+build-backend = "uv_build"
 
 
 [project]
 name = "toyllm"
 version = "0.1.0"
 description = "Toy LLM"
-keywords=["machine learning", "deep learning", "llm"]
+keywords = ["machine learning", "deep learning", "llm"]
 license = "Apache-2.0"
+license-files = ["LICENSE"]
 readme = "README.md"
-authors = [
-    {name = "Xiangzhuang Shen", email = "datahonor@gmail.com"},
-]
+authors = [{ name = "Xiangzhuang Shen", email = "shenxiangzhuang@gmail.com" }]
 
-classifiers=[
+classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
     "Intended Audience :: Developers",
@@ -33,33 +32,11 @@ dependencies = [
     "typer>=0.27.0",
     "rich>=15.0.0",
     "beartype>=0.22.9",
-    "jupyterlab>=4.6.2",
 ]
 
 [project.optional-dependencies]
-dev = [
-    "nvitop>=1.7.1",
-    "prek>=0.4.11",
-    "ipython>=9.15.0",
-    "mypy>=2.3.0",
-    "ruff>=0.16.0",
-    "pytest>=9.1.1",
-    "pytest-cov>=7.1.0",
-    "pytest-sugar>=1.1.1",
-    "hypothesis>=6.163.0",
-    "commitizen>=4.16.5",
-    "pandas>=3.0.5",
-]
 plot = [
     "matplotlib>=3.11.1",
-]
-docs = [
-    "zensical>=0.0.51",
-    "mkdocstrings>=1.0.6",
-    "mkdocs-bibtex>=4.4.0",
-    "mkdocstrings-python>=2.0.5",
-    "mkdocs-git-committers-plugin-2>=2.5.0",
-    "mkdocs-git-revision-date-localized-plugin>=1.5.3",
 ]
 example = [
     "marimo>=0.23.15",
@@ -75,26 +52,27 @@ finetune = [
     "wandb>=0.28.1",
 ]
 
-[tool.setuptools]
-zip-safe = true
-include-package-data = true
+[dependency-groups]
+dev = [
+    "commitizen>=4.17.0",
+    "hypothesis>=6.163.0",
+    "ipython>=9.15.0",
+    "jupyterlab>=4.6.2",
+    "nvitop>=1.7.1",
+    "pandas>=3.0.5",
+    "prek>=0.4.11",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "pytest-sugar>=1.1.1",
+    "ruff>=0.16.0",
+    "ty>=0.0.65",
+]
+docs = [
+    "zensical>=0.0.51",
+]
 
-[tool.setuptools.packages.find]
-include = ["toyllm*"]
-namespaces = false
-
-
-# [tool.uv]
-# extra-index-url = ["https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"]
-
-
-[tool.mypy]
-strict = true
-# exclude all files in playground
-exclude = ["playground/*", "toyllm/cli/benchmark*"]
-ignore_missing_imports = true
-disallow_untyped_decorators = false
-
+[tool.ty.src]
+include = ["src", "tests"]
 
 # Ruff configuration: https://docs.astral.sh/ruff/configuration/#configuring-ruff
 [tool.ruff]
@@ -107,7 +85,6 @@ exclude = [
     ".git-rewrite",
     ".hg",
     ".ipynb_checkpoints",
-    ".mypy_cache",
     ".nox",
     ".pants.d",
     ".pyenv",
@@ -175,7 +152,7 @@ pydocstyle = { convention = "google" }
 'playground/finetune/*' = ["ALL"]
 'playground/*.ipynb' = ["TRY003", "ANN204", "EM102", "N806"]
 
-'toyllm/cli/benchmark*' = ["ALL"]
+'src/toyllm/cli/benchmark*' = ["ALL"]
 'tests/*' = [
     "S101", # assert
 ]

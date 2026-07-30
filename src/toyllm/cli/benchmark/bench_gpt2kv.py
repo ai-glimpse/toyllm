@@ -21,7 +21,7 @@ console = Console()
 console.print("[bold]GPT-2 KV Cache Benchmark[/bold]")
 
 
-def cleanup_gpu_memory():
+def cleanup_gpu_memory() -> None:
     """Clean up GPU memory to avoid OOM errors."""
     gc.collect()
     if torch.cuda.is_available():
@@ -302,17 +302,17 @@ def main(
 
 
 # Add a standalone plotting function that can be called directly
-def create_plots_from_csv(csv_path: str, output_dir: str = None):
+def create_plots_from_csv(csv_path: str | Path, output_dir: str | Path | None = None) -> int:
     """Standalone function to create plots from an existing CSV file."""
-    csv_path = Path(csv_path)
+    csv_file = Path(csv_path)
 
     # If output directory not specified, use same directory as CSV
     if output_dir is None:
-        output_dir = csv_path.parent
+        output_path = csv_file.parent
     else:
-        output_dir = Path(output_dir)
+        output_path = Path(output_dir)
 
-    plot_results(csv_path, output_dir)
+    plot_results(csv_file, output_path)
     return 0
 
 
@@ -330,15 +330,15 @@ if __name__ == "__main__":
         ],
         max_new_tokens_list: list[int] = list(range(1000, 99, -100)),
         output_dir: str = "benchmark/gpt2kv",
-    ):
+    ) -> None:
         """Run the full benchmark suite."""
         main(model_sizes, max_new_tokens_list, output_dir)
 
     @app.command()
     def plot(
         csv_file: str = typer.Argument(..., help="Path to the benchmark results CSV file"),
-        output_dir: str = typer.Option(None, help="Output directory for plots (default: same as CSV)"),
-    ):
+        output_dir: str | None = typer.Option(None, help="Output directory for plots (default: same as CSV)"),
+    ) -> int:
         """Generate plots from an existing benchmark results CSV file."""
         return create_plots_from_csv(csv_file, output_dir)
 

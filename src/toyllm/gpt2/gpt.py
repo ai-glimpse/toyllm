@@ -18,8 +18,6 @@ from toyllm.gpt2.config import (
     get_model_config,
 )
 
-from .kv_cache import KVCache
-
 logger = logging.getLogger(__name__)
 
 
@@ -37,7 +35,6 @@ class MultiHeadAttention(nn.Module):
         dropout_rate: float,
         n_heads: int,
         qkv_bias: bool = False,
-        use_kv_cache: bool = True,
     ) -> None:
         super().__init__()
         if d_out % n_heads != 0:
@@ -55,50 +52,37 @@ class MultiHeadAttention(nn.Module):
         self.dropout = nn.Dropout(dropout_rate)
         self.mask: torch.Tensor
         self.register_buffer("mask", torch.triu(torch.ones(ctx_len, ctx_len), diagonal=1))
-        self.use_kv_cache = use_kv_cache
-        self.kv_cache: KVCache
-        if use_kv_cache:
-            self.kv_cache = KVCache(
-                batch_size=1,
-                max_seq_len=ctx_len,
-                num_kv_heads=n_heads,
-                head_dim=self.head_dim,
-                dtype=torch.float32,
-            )
 
     @jaxtyping.jaxtyped(typechecker=typechecker)
     def forward(self, x: GPTInnerType) -> GPTInnerType:
         batch_size, num_tokens, _d_in = x.shape
 
         # (batch_size, num_tokens, d_in) -> (batch_size, num_tokens, d_out)
-        queries = self.W_query(x)
         keys = self.W_key(x)
+        queries = self.W_query(x)
         values = self.W_value(x)
 
         # We implicitly split the matrix by adding a `num_heads` dimension
         # Unroll last dim: (batch_size, num_tokens, d_out) -> (batch_size, num_tokens, num_heads, head_dim)
-        queries = queries.view(batch_size, num_tokens, self.n_heads, self.head_dim)
         keys = keys.view(batch_size, num_tokens, self.n_heads, self.head_dim)
         values = values.view(batch_size, num_tokens, self.n_heads, self.head_dim)
+        queries = queries.view(batch_size, num_tokens, self.n_heads, self.head_dim)
 
         # Transpose: (batch_size, num_tokens, num_heads, head_dim) -> (batch_size, num_heads, num_tokens, head_dim)
-        queries = queries.transpose(1, 2)
         keys = keys.transpose(1, 2)
+        queries = queries.transpose(1, 2)
         values = values.transpose(1, 2)
 
-        if self.use_kv_cache:
-            self.kv_cache.update(keys, values)
-            keys = self.kv_cache.k_cache[:, :, : self.kv_cache.size, :]
-            values = self.kv_cache.v_cache[:, :, : self.kv_cache.size, :]
         # Compute scaled dot-product attention (aka self-attention) with a causal mask
         # attn_scores shape: (batch_size, num_heads, num_tokens, num_tokens)
         attn_scores = queries @ keys.transpose(2, 3)  # Dot product for each head
 
         # Original mask truncated to the number of tokens and converted to boolean
-        mask_bool = self.mask.bool()[self.kv_cache.size - num_tokens : self.kv_cache.size, : self.kv_cache.size]
+        mask_bool = self.mask.bool()[:num_tokens, :num_tokens]
 
         # Use the mask to fill attention scores
         attn_scores.masked_fill_(mask_bool, -torch.inf)
+
         attn_weights = torch.softmax(attn_scores / keys.shape[-1] ** 0.5, dim=-1)
         attn_weights = self.dropout(attn_weights)
 
@@ -109,7 +93,7 @@ class MultiHeadAttention(nn.Module):
         context_vec = context_vec.contiguous().view(batch_size, num_tokens, self.d_out)
         context_vec = self.out_proj(context_vec)  # optional projection
 
-        return context_vec  # type: ignore[no-any-return]
+        return context_vec
 
 
 class LayerNorm(nn.Module):
@@ -148,7 +132,7 @@ class FeedForward(nn.Module):
 
     @jaxtyping.jaxtyped(typechecker=typechecker)
     def forward(self, x: GPTInnerType) -> GPTInnerType:
-        return self.layers(x)  # type: ignore[no-any-return]
+        return self.layers(x)
 
 
 class TransformerBlock(nn.Module):
@@ -186,7 +170,7 @@ class TransformerBlock(nn.Module):
         return x
 
 
-class GPTKVModel(nn.Module):
+class GPTModel(nn.Module):
     def __init__(self, model_size: GPTModelSize) -> None:
         """GPT Model.
 
@@ -206,14 +190,12 @@ class GPTKVModel(nn.Module):
         self.out_head = nn.Linear(self.config.emb_dim, self.config.vocab_size, bias=False)
 
     @jaxtyping.jaxtyped(typechecker=typechecker)
-    def forward(self, input_vocab_indexes: GPTInputType, prev_pos: int) -> GPTOutputType:
+    def forward(self, input_vocab_indexes: GPTInputType) -> GPTOutputType:
         _batch_size, num_tokens = input_vocab_indexes.shape
         # batch_size num_tokens -> batch_size num_tokens emb_dim
         tok_embeds = self.tok_emb(input_vocab_indexes)
         # pos_embeds shape: (num_tokens, emb_dim)
-        pos_embeds = self.pos_emb(
-            torch.arange(start=prev_pos, end=prev_pos + num_tokens, device=input_vocab_indexes.device)
-        )
+        pos_embeds = self.pos_emb(torch.arange(num_tokens, device=input_vocab_indexes.device))
         # pos_embeds is **broadcast** to (batch_size, num_tokens, emb_dim)
         # x: (batch_size, num_tokens, emb_dim)
         x = tok_embeds + pos_embeds  # Shape [batch_size, num_tokens, emb_size]
@@ -221,7 +203,7 @@ class GPTKVModel(nn.Module):
         x = self.trf_blocks(x)
         x = self.final_norm(x)
         logits = self.out_head(x)
-        return logits  # type: ignore[no-any-return]
+        return logits
 
     @property
     def device(self) -> torch.device:
@@ -230,7 +212,7 @@ class GPTKVModel(nn.Module):
     def save(self) -> None:
         torch.save(self.state_dict(), f"{self.config.name}.pt")
 
-    def load(self, model_path: str = "") -> "GPTKVModel":
+    def load(self, model_path: str = "") -> "GPTModel":
         if model_path == "":
             model_path = f"{pathlib.Path(__file__).parents[2]}/models/{self.config.name}.pt"
         logger.debug("Loading model from %s", model_path)
